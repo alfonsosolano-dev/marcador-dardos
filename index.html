@@ -3,42 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <meta name="theme-color" content="#121212">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="icon" href="">
-    
-    <title>Darts Master Pro</title>
+    <link rel="icon" href="http://googleusercontent.com/image_collection/image_retrieval/11757662392344264223_0">
+    <title>Darts Pro 4P</title>
     <style>
-        :root { --p1: #3498db; --p2: #e74c3c; --bg: #121212; }
-        body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; margin: 0; padding: 10px; overflow-x: hidden; }
+        :root { --p1: #3498db; --p2: #e74c3c; --p3: #2ecc71; --p4: #f1c40f; --bg: #121212; }
+        body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; margin: 0; padding: 5px; overflow-x: hidden; }
         
-        .nav { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
-        .nav-btn { background: #333; color: white; border: 2px solid #555; padding: 12px; border-radius: 8px; cursor: pointer; flex: 1; max-width: 100px; font-weight: bold; -webkit-tap-highlight-color: transparent; }
+        .nav { display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; }
+        .nav-btn { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 8px; cursor: pointer; flex: 1; font-weight: bold; font-size: 0.8rem; }
         .nav-btn.active { background: #f1c40f; color: black; border-color: #f1c40f; }
 
-        .header { display: flex; justify-content: space-around; margin-bottom: 20px; }
-        .p-box { background: #1e272e; padding: 15px; border-radius: 12px; width: 40%; border: 4px solid transparent; }
-        .p-box.active-0 { border-color: var(--p1); box-shadow: 0 0 15px var(--p1); }
-        .p-box.active-1 { border-color: var(--p2); box-shadow: 0 0 15px var(--p2); }
-        .score { font-size: 2.8rem; font-weight: bold; margin: 5px 0; }
-        .p-name { color: #f1c40f; font-size: 1rem; border-bottom: 1px dashed #555; display: inline-block; min-width: 60px; padding-bottom: 2px; }
-
-        input[type="number"] { padding: 15px; font-size: 1.8rem; width: 140px; text-align: center; border-radius: 10px; border: none; background: #333; color: white; margin-bottom: 10px; }
-        .btn-main { padding: 18px; background: #27ae60; color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 1.2rem; width: 85%; max-width: 300px; box-shadow: 0 4px 0 #1e8449; }
-
-        .grid { width: 100%; max-width: 400px; margin: 10px auto; border-collapse: separate; border-spacing: 5px; }
-        .m-btn { width: 75px; height: 60px; font-size: 2rem; background: #2c3e50; color: white; border: none; border-radius: 12px; }
-        .m-btn.closed { background: #27ae60; color: white; }
-        .num { font-size: 1.6rem; font-weight: bold; color: #f1c40f; }
-
-        .history { margin: 20px auto; background: #1e272e; padding: 15px; border-radius: 12px; text-align: left; max-width: 400px; }
-        .hist-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; margin-bottom: 10px; padding-bottom: 5px; }
-        .hist-item { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 8px 0; font-size: 0.85rem; }
+        /* Cuadrícula 4 Jugadores */
+        .header-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .p-box { background: #1e272e; padding: 10px; border-radius: 10px; border: 3px solid transparent; transition: 0.2s; }
+        .p-box.active-0 { border-color: var(--p1); box-shadow: 0 0 10px var(--p1); }
+        .p-box.active-1 { border-color: var(--p2); box-shadow: 0 0 10px var(--p2); }
+        .p-box.active-2 { border-color: var(--p3); box-shadow: 0 0 10px var(--p3); }
+        .p-box.active-3 { border-color: var(--p4); box-shadow: 0 0 10px var(--p4); }
         
-        .footer { margin-top: 20px; padding-bottom: 40px; display: flex; justify-content: center; gap: 15px; }
-        .btn-sec { background: #444; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; }
-        .btn-del { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1.2rem; }
+        .score { font-size: 1.8rem; font-weight: bold; margin: 2px 0; }
+        .p-name { color: #ccc; font-size: 0.8rem; border-bottom: 1px dashed #555; white-space: nowrap; overflow: hidden; }
+
+        /* Controles */
+        input[type="number"] { padding: 12px; font-size: 1.5rem; width: 100px; text-align: center; border-radius: 8px; border: none; background: #333; color: white; margin-bottom: 10px; }
+        .btn-main { padding: 15px; background: #27ae60; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; width: 90%; }
+
+        /* Cricket 4P */
+        .grid { width: 100%; border-collapse: collapse; margin-top: 5px; }
+        .m-btn { width: 45px; height: 45px; font-size: 1.4rem; background: #2c3e50; color: white; border: 1px solid #121212; border-radius: 5px; }
+        .m-btn.closed { background: #27ae60; }
+        .num-col { font-size: 1.2rem; font-weight: bold; color: #f1c40f; width: 30px; }
+
+        .history { margin: 15px auto; background: #1e272e; padding: 10px; border-radius: 10px; text-align: left; font-size: 0.8rem; }
+        .footer { margin-top: 10px; padding-bottom: 30px; display: flex; justify-content: center; gap: 10px; }
+        .btn-sec { background: #444; color: white; border: none; padding: 10px; border-radius: 8px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -49,61 +49,65 @@
         <button class="nav-btn" onclick="cambiarJuego('C')" id="btnC">CRICKET</button>
     </div>
 
-    <div class="header">
-        <div id="b0" class="p-box active-0">
+    <div class="header-grid">
+        <div id="b0" class="p-box active-0" onclick="turno=0; render()">
+            <div id="n0" class="p-name" onclick="editarNombre(0)">P1</div>
             <div class="score" id="s0">501</div>
-            <div id="n0" class="p-name" onclick="editarNombre(0)">Jugador 1</div>
-            <div id="w0" style="color:#777; font-size:0.75rem; margin-top:5px">0 Victorias</div>
         </div>
-        <div id="b1" class="p-box">
+        <div id="b1" class="p-box" onclick="turno=1; render()">
+            <div id="n1" class="p-name" onclick="editarNombre(1)">P2</div>
             <div class="score" id="s1">501</div>
-            <div id="n1" class="p-name" onclick="editarNombre(1)">Jugador 2</div>
-            <div id="w1" style="color:#777; font-size:0.75rem; margin-top:5px">0 Victorias</div>
+        </div>
+        <div id="b2" class="p-box" onclick="turno=2; render()">
+            <div id="n2" class="p-name" onclick="editarNombre(2)">P3</div>
+            <div class="score" id="s2">501</div>
+        </div>
+        <div id="b3" class="p-box" onclick="turno=3; render()">
+            <div id="n3" class="p-name" onclick="editarNombre(3)">P4</div>
+            <div class="score" id="s3">501</div>
         </div>
     </div>
 
     <div id="seccion-x01">
-        <input type="number" id="inputX01" placeholder="Puntos" inputmode="numeric">
-        <br>
+        <input type="number" id="inputX01" placeholder="0" inputmode="numeric">
         <button class="btn-main" onclick="anotarX01()">ANOTAR</button>
     </div>
 
     <div id="seccion-cricket" style="display:none;">
         <table class="grid"><tbody id="c-body"></tbody></table>
-        <button class="btn-main" style="background:#f1c40f; color:black; box-shadow: 0 4px 0 #c4a00c;" onclick="turno = 1 - turno; render();">SIGUIENTE JUGADOR ➜</button>
+        <button class="btn-main" style="background:#f1c40f; color:black; margin-top:10px;" onclick="siguienteTurno()">SIGUIENTE TURNO ➜</button>
     </div>
 
     <div class="history">
-        <div class="hist-header">
-            <span style="font-weight:bold; color: #f1c40f;">HISTORIAL</span>
-            <button class="btn-del" onclick="borrarHistorialTotal()" title="Borrar todo">🗑️</button>
+        <div style="display:flex; justify-content:space-between;">
+            <b style="color:#f1c40f">HISTORIAL</b>
+            <span onclick="localStorage.removeItem('darts_4p'); mostrarHist();" style="cursor:pointer">🗑️</span>
         </div>
         <div id="hist-list"></div>
     </div>
 
     <div class="footer">
         <button class="btn-sec" onclick="undo()">↩ Deshacer</button>
-        <button class="btn-sec" style="background:#c0392b;" onclick="reiniciarPartida()">REINICIAR</button>
+        <button class="btn-sec" style="background:#c0392b;" onclick="reiniciarPartida()">Reiniciar</button>
     </div>
 
     <script>
         let modo = 501;
         let turno = 0;
-        let scores = [501, 501];
-        let wins = [0, 0];
-        let nombres = ["Jugador 1", "Jugador 2"];
+        let scores = [501, 501, 501, 501];
+        let nombres = ["P1", "P2", "P3", "P4"];
+        let marks = {20:[0,0,0,0], 19:[0,0,0,0], 18:[0,0,0,0], 17:[0,0,0,0], 16:[0,0,0,0], 15:[0,0,0,0], 25:[0,0,0,0]};
         let history = [];
-        let marks = {20:[0,0], 19:[0,0], 18:[0,0], 17:[0,0], 16:[0,0], 15:[0,0], 25:[0,0]};
 
         function editarNombre(p) {
-            let n = prompt("Nombre del Jugador " + (p+1), nombres[p]);
-            if(n) { nombres[p] = n.substring(0, 12); render(); }
+            let n = prompt("Nombre Jugador " + (p+1), nombres[p]);
+            if(n) { nombres[p] = n.substring(0, 8); render(); }
         }
 
         function cambiarJuego(m) {
             modo = m;
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn' + (m === 'C' ? 'C' : m)).classList.add('active');
+            document.getElementById('btn' + (m==='C'?'C':m)).classList.add('active');
             reiniciarPartida();
         }
 
@@ -113,55 +117,60 @@
             if(isNaN(val)) return;
             save();
             let res = scores[turno] - val;
-            if(res < 0 || res === 1) alert("¡BUST!");
-            else if(res === 0) { wins[turno]++; registrarFin(nombres[turno], modo); reiniciarPartida(); }
+            if(res < 0 || res === 1) alert("BUST!");
+            else if(res === 0) { alert("¡GANADOR " + nombres[turno] + "!"); registrarFin(nombres[turno], modo); reiniciarPartida(); }
             else scores[turno] = res;
-            turno = 1 - turno;
+            siguienteTurno();
             inp.value = '';
             render();
         }
 
         function markC(num, p) {
-            if(p !== turno) { if(!confirm("¿Es el turno de " + nombres[p] + "?")) return; turno = p; }
+            turno = p; // Cambia el turno al pulsar el botón
             save();
             marks[num][p]++;
-            if(marks[num][p] > 3 && marks[num][1-p] < 3) scores[p] += (num === 25 ? 25 : num);
+            if(marks[num][p] > 3) {
+                // Solo puntúa si alguien más NO lo ha cerrado
+                let alguienAbierto = false;
+                for(let i=0; i<4; i++) { if(i!==p && marks[num][i] < 3) alguienAbierto = true; }
+                if(alguienAbierto) scores[p] += (num === 25 ? 25 : num);
+            }
+            // Victoria Cricket simplificada
             const targets = [20,19,18,17,16,15,25];
-            if(targets.every(t => marks[t][p] >= 3) && scores[p] >= scores[1-p]) {
-                wins[p]++; registrarFin(nombres[p], "Cricket"); reiniciarPartida();
+            if(targets.every(t => marks[t][p] >= 3)) {
+                let maxPuntos = true;
+                for(let i=0; i<4; i++) { if(scores[i] > scores[p]) maxPuntos = false; }
+                if(maxPuntos) { alert("GANADOR " + nombres[p]); registrarFin(nombres[p], "Cricket"); reiniciarPartida(); }
             }
             render();
         }
 
+        function siguienteTurno() { turno = (turno + 1) % 4; render(); }
+
         function reiniciarPartida() {
-            if(document.getElementById('inputX01')) document.getElementById('inputX01').value = '';
-            scores = (modo === 'C') ? [0, 0] : [modo, modo];
-            marks = {20:[0,0], 19:[0,0], 18:[0,0], 17:[0,0], 16:[0,0], 15:[0,0], 25:[0,0]};
-            turno = 0;
-            history = [];
-            render();
+            scores = (modo === 'C') ? [0,0,0,0] : [modo, modo, modo, modo];
+            marks = {20:[0,0,0,0], 19:[0,0,0,0], 18:[0,0,0,0], 17:[0,0,0,0], 16:[0,0,0,0], 15:[0,0,0,0], 25:[0,0,0,0]};
+            turno = 0; history = []; render();
         }
 
         function render() {
-            document.getElementById('s0').innerText = scores[0];
-            document.getElementById('s1').innerText = scores[1];
-            document.getElementById('n0').innerText = nombres[0];
-            document.getElementById('n1').innerText = nombres[1];
-            document.getElementById('w0').innerText = wins[0] + " Victorias";
-            document.getElementById('w1').innerText = wins[1] + " Victorias";
-            document.getElementById('b0').className = 'p-box' + (turno===0 ? ' active-0' : '');
-            document.getElementById('b1').className = 'p-box' + (turno===1 ? ' active-1' : '');
+            for(let i=0; i<4; i++) {
+                document.getElementById('s'+i).innerText = scores[i];
+                document.getElementById('n'+i).innerText = nombres[i];
+                document.getElementById('b'+i).className = 'p-box' + (turno===i ? ' active-'+i : '');
+            }
 
             if(modo === 'C') {
                 document.getElementById('seccion-x01').style.display = 'none';
                 document.getElementById('seccion-cricket').style.display = 'block';
                 let h = "";
                 [20,19,18,17,16,15,25].forEach(n => {
-                    h += `<tr>
-                        <td><button class="m-btn ${marks[n][0]>=3?'closed':''}" onclick="markC(${n},0)">${getS(marks[n][0])}</button></td>
-                        <td class="num">${n==25?'B':n}</td>
-                        <td><button class="m-btn ${marks[n][1]>=3?'closed':''}" onclick="markC(${n},1)">${getS(marks[n][1])}</button></td>
-                    </tr>`;
+                    h += `<tr>`;
+                    for(let p=0; p<4; p++) {
+                        if(p===2) h += `<td class="num-col">${n==25?'B':n}</td>`;
+                        h += `<td><button class="m-btn ${marks[n][p]>=3?'closed':''}" onclick="markC(${n},${p})">${getS(marks[n][p])}</button></td>`;
+                    }
+                    h += `</tr>`;
                 });
                 document.getElementById('c-body').innerHTML = h;
             } else {
@@ -175,26 +184,15 @@
         function undo() { if(history.length>0) { let l=history.pop(); scores=l.s; turno=l.t; marks=l.m; render(); } }
         
         function registrarFin(w, t) {
-            let logs = JSON.parse(localStorage.getItem('darts_vfinal')) || [];
+            let logs = JSON.parse(localStorage.getItem('darts_4p')) || [];
             logs.unshift({ w, t, d: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) });
-            localStorage.setItem('darts_vfinal', JSON.stringify(logs.slice(0,5)));
+            localStorage.setItem('darts_4p', JSON.stringify(logs.slice(0,5)));
             mostrarHist();
         }
 
         function mostrarHist() {
-            let logs = JSON.parse(localStorage.getItem('darts_vfinal')) || [];
-            document.getElementById('hist-list').innerHTML = logs.map(l => `
-                <div class="hist-item"><span>🏆 ${l.w} (${l.t})</span><span>${l.d}</span></div>
-            `).join('') || "No hay partidas recientes";
-        }
-
-        function borrarHistorialTotal() {
-            if(confirm("¿Seguro que quieres borrar todo el historial de victorias?")) {
-                localStorage.removeItem('darts_vfinal');
-                wins = [0, 0]; // También resetea el contador de la sesión actual
-                mostrarHist();
-                render();
-            }
+            let logs = JSON.parse(localStorage.getItem('darts_4p')) || [];
+            document.getElementById('hist-list').innerHTML = logs.map(l => `<div>🏆 ${l.w} (${l.t}) - ${l.d}</div>`).join('') || "No hay partidas";
         }
 
         mostrarHist();
