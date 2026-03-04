@@ -3,51 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Darts Fix</title>
+    <title>Darts Master Pro</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; text-align: center; margin: 0; padding: 10px; }
-        .grid { width: 100%; max-width: 400px; margin: 20px auto; border-collapse: collapse; }
-        .m-btn { width: 70px; height: 60px; font-size: 1.8rem; background: #333; color: white; border: 2px solid #444; border-radius: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-        .m-btn.active { color: #f1c40f; border-color: #f1c40f; }
+        :root { --p1: #3498db; --p2: #e74c3c; --bg: #121212; }
+        body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; margin: 0; padding: 10px; }
+        
+        .nav { display: flex; justify-content: center; gap: 5px; margin-bottom: 15px; }
+        .nav-btn { background: #333; color: white; border: 1px solid #555; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
+        .nav-btn.active { background: #f1c40f; color: black; font-weight: bold; }
+
+        .header { display: flex; justify-content: space-around; margin-bottom: 15px; }
+        .p-box { background: #1e272e; padding: 10px; border-radius: 10px; width: 42%; border: 3px solid transparent; }
+        .p-box.active { border-color: var(--p1); box-shadow: 0 0 10px var(--p1); }
+        .p-box.active-p2 { border-color: var(--p2); box-shadow: 0 0 10px var(--p2); }
+        .score { font-size: 2.2rem; font-weight: bold; margin: 5px 0; }
+
+        /* X01 */
+        .x01-input { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 20px; }
+        input { padding: 15px; font-size: 1.5rem; width: 120px; text-align: center; border-radius: 8px; border: none; background: #333; color: white; }
+        .btn-add { padding: 15px 30px; background: #27ae60; color: white; border: none; border-radius: 8px; font-weight: bold; }
+
+        /* Cricket */
+        .grid { width: 100%; max-width: 420px; margin: 10px auto; border-collapse: collapse; }
+        .m-btn { width: 65px; height: 55px; font-size: 1.6rem; background: #333; color: white; border: 1px solid #444; border-radius: 8px; cursor: pointer; }
         .m-btn.closed { background: #27ae60; color: white; }
-        .num { font-size: 1.5rem; font-weight: bold; width: 60px; }
-        .header { display: flex; justify-content: space-around; background: #1e272e; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
-        .p-box { border: 2px solid transparent; padding: 10px; border-radius: 8px; width: 40%; }
-        .active { border-color: #3498db; box-shadow: 0 0 10px #3498db; }
-        .score { font-size: 2rem; font-weight: bold; }
+        .num { font-size: 1.3rem; font-weight: bold; color: #f1c40f; width: 50px; }
+
+        .btn-next { padding: 15px; width: 90%; background: #f1c40f; border: none; border-radius: 10px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+        .footer { margin-top: 20px; display: flex; justify-content: center; gap: 20px; }
     </style>
 </head>
 <body>
 
+    <div class="nav">
+        <button class="nav-btn" onclick="setModo(301)" id="n301">301</button>
+        <button class="nav-btn active" onclick="setModo(501)" id="n501">501</button>
+        <button class="nav-btn" onclick="setModo('C')" id="nC">CRICKET</button>
+    </div>
+
     <div class="header">
         <div id="b0" class="p-box active">
+            <div class="score" id="s0">501</div>
             <div>P1</div>
-            <div id="s0" class="score">0</div>
         </div>
         <div id="b1" class="p-box">
+            <div class="score" id="s1">501</div>
             <div>P2</div>
-            <div id="s1" class="score">0</div>
         </div>
     </div>
 
-    <table class="grid">
+    <div id="area-x01" class="x01-input">
+        <input type="number" id="inp" placeholder="0" inputmode="numeric">
+        <button class="btn-add" onclick="addX01()">ANOTAR PUNTOS</button>
+    </div>
+
+    <table id="area-c" class="grid" style="display:none;">
         <tbody id="c-body"></tbody>
     </table>
 
-    <button onclick="turno = 1 - turno; update();" style="padding:15px; width:80%; background:#f1c40f; border:none; border-radius:10px; font-weight:bold; font-size:1.2rem;">CAMBIAR TURNO</button>
-    <br><br>
-    <button onclick="location.reload()" style="color:red; background:none; border:none;">Reiniciar App</button>
+    <button id="next-btn" class="btn-next" style="display:none;" onclick="turno = 1 - turno; update();">SIGUIENTE JUGADOR ➜</button>
+
+    <div class="footer">
+        <button onclick="undo()" style="background:none; border:1px solid #555; color:#aaa; padding:8px; border-radius:5px;">↩ Deshacer</button>
+        <button onclick="reset()" style="background:none; border:1px solid #e74c3c; color:#e74c3c; padding:8px; border-radius:5px;">Reset</button>
+    </div>
 
     <script>
+        let modo = 501;
         let turno = 0;
-        let scores = [0, 0];
+        let scores = [501, 501];
+        let history = [];
         let marks = {20:[0,0], 19:[0,0], 18:[0,0], 17:[0,0], 16:[0,0], 15:[0,0], 25:[0,0]};
 
-        function mark(n, p) {
+        function setModo(m) {
+            modo = m;
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('n'+m).classList.add('active');
+            reset();
+        }
+
+        function addX01() {
+            let v = parseInt(document.getElementById('inp').value);
+            if(isNaN(v)) return;
+            save();
+            let res = scores[turno] - v;
+            if(res < 0 || res === 1) alert("¡BUST!");
+            else if(res === 0) { alert("¡GANADOR P"+(turno+1)+"!"); reset(); }
+            else scores[turno] = res;
+            turno = 1 - turno;
+            document.getElementById('inp').value = '';
+            update();
+        }
+
+        function markC(n, p) {
+            if(p !== turno) { if(!confirm("¿Es el turno de P"+(p+1)+"?")) return; turno = p; }
+            save();
             marks[n][p]++;
-            if (marks[n][p] > 3 && marks[n][1-p] < 3) {
-                scores[p] += n;
-            }
+            if(marks[n][p] > 3 && marks[n][1-p] < 3) scores[p] += (n === 25 ? 25 : n);
             update();
         }
 
@@ -55,23 +107,36 @@
             document.getElementById('s0').innerText = scores[0];
             document.getElementById('s1').innerText = scores[1];
             document.getElementById('b0').className = 'p-box' + (turno===0 ? ' active' : '');
-            document.getElementById('b1').className = 'p-box' + (turno===1 ? ' active' : '');
+            document.getElementById('b1').className = 'p-box' + (turno===1 ? ' active active-p2' : '');
             
-            let html = "";
-            [20,19,18,17,16,15,25].forEach(n => {
-                html += `<tr>
-                    <td><button class="m-btn ${marks[n][0]>=3?'closed':'active'}" onclick="mark(${n},0)">${getS(marks[n][0])}</button></td>
-                    <td class="num">${n==25?'B':n}</td>
-                    <td><button class="m-btn ${marks[n][1]>=3?'closed':'active'}" onclick="mark(${n},1)">${getS(marks[n][1])}</button></td>
-                </tr>`;
-            });
-            document.getElementById('c-body').innerHTML = html;
+            if(modo === 'C') {
+                document.getElementById('area-x01').style.display = 'none';
+                document.getElementById('area-c').style.display = 'table';
+                document.getElementById('next-btn').style.display = 'block';
+                let html = "";
+                [20,19,18,17,16,15,25].forEach(n => {
+                    html += `<tr>
+                        <td><button class="m-btn ${marks[n][0]>=3?'closed':''}" onclick="markC(${n},0)">${getS(marks[n][0])}</button></td>
+                        <td class="num">${n==25?'B':n}</td>
+                        <td><button class="m-btn ${marks[n][1]>=3?'closed':''}" onclick="markC(${n},1)">${getS(marks[n][1])}</button></td>
+                    </tr>`;
+                });
+                document.getElementById('c-body').innerHTML = html;
+            } else {
+                document.getElementById('area-x01').style.display = 'flex';
+                document.getElementById('area-c').style.display = 'none';
+                document.getElementById('next-btn').style.display = 'none';
+            }
         }
 
-        function getS(c) {
-            if(c===0) return ""; if(c===1) return "/"; if(c===2) return "X"; return "⊚";
+        function getS(c) { if(c===0) return ""; if(c===1) return "/"; if(c===2) return "X"; return "⊚"; }
+        function save() { history.push({s:[...scores], t:turno, m:JSON.parse(JSON.stringify(marks))}); }
+        function undo() { if(history.length>0) { let l=history.pop(); scores=l.s; turno=l.t; marks=l.m; update(); } }
+        function reset() {
+            scores = (modo==='C') ? [0,0] : [modo, modo];
+            marks = {20:[0,0], 19:[0,0], 18:[0,0], 17:[0,0], 16:[0,0], 15:[0,0], 25:[0,0]};
+            turno = 0; history = []; update();
         }
-
         update();
     </script>
 </body>
