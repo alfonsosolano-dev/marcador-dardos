@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darts Scoreboard Pro</title>
+    <title>Darts Master Pro</title>
     <style>
         :root { --p1: #3498db; --p2: #e74c3c; }
         body { font-family: 'Segoe UI', sans-serif; background: #121212; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
         
+        /* Selector de Modo */
+        .mode-selector { margin-bottom: 15px; display: flex; gap: 10px; }
+        .mode-btn { background: #333; color: white; border: 1px solid #555; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; }
+        .mode-btn.active { background: #f1c40f; color: black; border-color: #f1c40f; font-weight: bold; }
+
         .scoreboard { display: flex; gap: 15px; width: 100%; max-width: 500px; margin-bottom: 10px; }
         .player-box { flex: 1; padding: 15px; border-radius: 12px; background: #1e272e; text-align: center; border: 4px solid transparent; transition: 0.3s; }
         .active-p1 { border-color: var(--p1); box-shadow: 0 0 15px var(--p1); }
@@ -35,6 +40,11 @@
 
     <h2 style="margin-bottom: 10px;">Darts Master 🎯</h2>
 
+    <div class="mode-selector">
+        <button class="mode-btn" onclick="cambiarModo(301)" id="btn301">301</button>
+        <button class="mode-btn active" onclick="cambiarModo(501)" id="btn501">501</button>
+    </div>
+
     <div class="scoreboard">
         <div id="box1" class="player-box active-p1">
             <span class="sets-count" id="wins1">0 Wins</span>
@@ -48,7 +58,7 @@
         </div>
     </div>
 
-    <div id="checkout-hint">¡A por el Triple 20!</div>
+    <div id="checkout-hint">Sigue sumando...</div>
 
     <div class="controls">
         <input type="number" id="inputScore" placeholder="Score" inputmode="numeric">
@@ -61,10 +71,11 @@
     <div class="history-section">
         <div class="history-title">ÚLTIMAS PARTIDAS</div>
         <div id="history-list"></div>
-        <button class="clear-btn" onclick="limpiarTodo()">RESETEAR TODO EL MARCADOR</button>
+        <button class="clear-btn" onclick="limpiarTodo()">RESETEAR TODO</button>
     </div>
 
     <script>
+        let modoActual = 501;
         let scores = [501, 501];
         let turno = 0;
         let historialPasos = [];
@@ -74,6 +85,15 @@
             cargarDatos();
             mostrarHistorial();
         };
+
+        function cambiarModo(puntos) {
+            if (confirm(`¿Reiniciar partida a ${puntos}?`)) {
+                modoActual = puntos;
+                document.getElementById('btn301').classList.toggle('active', puntos === 301);
+                document.getElementById('btn501').classList.toggle('active', puntos === 501);
+                reiniciarLeg();
+            }
+        }
 
         function registrarTiro() {
             const input = document.getElementById('inputScore');
@@ -100,76 +120,7 @@
 
         function finalizarPartida(ganadorIndex) {
             globalWins[ganadorIndex]++;
-            
-            // Guardar en historial
             let partidas = JSON.parse(localStorage.getItem('dartsHistory')) || [];
             partidas.unshift({
-                ganador: `Jugador ${ganadorIndex + 1}`,
-                fecha: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
-            });
-            
-            localStorage.setItem('dartsHistory', JSON.stringify(partidas.slice(0, 10)));
-            localStorage.setItem('dartsWins', JSON.stringify(globalWins));
-            
-            alert(`¡JUGADOR ${ganadorIndex + 1} GANA LA PARTIDA!`);
-            reiniciarLeg();
-        }
-
-        function cargarDatos() {
-            globalWins = JSON.parse(localStorage.getItem('dartsWins')) || [0, 0];
-            actualizarUI();
-        }
-
-        function mostrarHistorial() {
-            const lista = document.getElementById('history-list');
-            const partidas = JSON.parse(localStorage.getItem('dartsHistory')) || [];
-            lista.innerHTML = partidas.map(p => `
-                <div class="history-item">
-                    <span>🏆 ${p.ganador}</span>
-                    <span style="color:#7f8c8d">${p.fecha}</span>
-                </div>
-            `).join('') || '<p style="text-align:center; color:#555">Sin partidas</p>';
-        }
-
-        function limpiarTodo() {
-            if(confirm("¿Seguro? Se borrarán todas las victorias y el historial.")) {
-                localStorage.clear();
-                globalWins = [0, 0];
-                reiniciarLeg();
-                mostrarHistorial();
-            }
-        }
-
-        function reiniciarLeg() {
-            scores = [501, 501];
-            turno = 0;
-            historialPasos = [];
-            actualizarUI();
-            mostrarHistorial();
-            document.getElementById('inputScore').value = '';
-        }
-
-        function deshacer() {
-            if (historialPasos.length === 0) return;
-            const ultimo = historialPasos.pop();
-            scores = ultimo.scores;
-            turno = ultimo.turno;
-            actualizarUI();
-        }
-
-        function actualizarUI() {
-            document.getElementById('score1').innerText = scores[0];
-            document.getElementById('score2').innerText = scores[1];
-            document.getElementById('wins1').innerText = `${globalWins[0]} Wins`;
-            document.getElementById('wins2').innerText = `${globalWins[1]} Wins`;
-            document.getElementById('box1').classList.toggle('active-p1', turno === 0);
-            document.getElementById('box2').classList.toggle('active-p2', turno === 1);
-            
-            const pActual = scores[turno];
-            const hint = document.getElementById('checkout-hint');
-            hint.innerText = (pActual <= 170) ? "¡Posibilidad de cierre!" : "Sigue sumando...";
-        }
-    </script>
-</body>
-</html>
-
+                ganador: `Jugador ${ganadorIndex + 1} (${modoActual})`,
+                fecha: new
