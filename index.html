@@ -13,12 +13,10 @@
         :root { --p1: #3498db; --p2: #e74c3c; --bg: #121212; }
         body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; margin: 0; padding: 10px; overflow-x: hidden; }
         
-        /* Navegación */
         .nav { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
         .nav-btn { background: #333; color: white; border: 2px solid #555; padding: 12px; border-radius: 8px; cursor: pointer; flex: 1; max-width: 100px; font-weight: bold; -webkit-tap-highlight-color: transparent; }
         .nav-btn.active { background: #f1c40f; color: black; border-color: #f1c40f; }
 
-        /* Jugadores */
         .header { display: flex; justify-content: space-around; margin-bottom: 20px; }
         .p-box { background: #1e272e; padding: 15px; border-radius: 12px; width: 40%; border: 4px solid transparent; }
         .p-box.active-0 { border-color: var(--p1); box-shadow: 0 0 15px var(--p1); }
@@ -26,22 +24,21 @@
         .score { font-size: 2.8rem; font-weight: bold; margin: 5px 0; }
         .p-name { color: #f1c40f; font-size: 1rem; border-bottom: 1px dashed #555; display: inline-block; min-width: 60px; padding-bottom: 2px; }
 
-        /* Controles X01 */
         input[type="number"] { padding: 15px; font-size: 1.8rem; width: 140px; text-align: center; border-radius: 10px; border: none; background: #333; color: white; margin-bottom: 10px; }
         .btn-main { padding: 18px; background: #27ae60; color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 1.2rem; width: 85%; max-width: 300px; box-shadow: 0 4px 0 #1e8449; }
-        .btn-main:active { transform: translateY(2px); box-shadow: 0 2px 0 #1e8449; }
 
-        /* Tabla Cricket */
         .grid { width: 100%; max-width: 400px; margin: 10px auto; border-collapse: separate; border-spacing: 5px; }
         .m-btn { width: 75px; height: 60px; font-size: 2rem; background: #2c3e50; color: white; border: none; border-radius: 12px; }
         .m-btn.closed { background: #27ae60; color: white; }
         .num { font-size: 1.6rem; font-weight: bold; color: #f1c40f; }
 
-        /* Historial y Footer */
         .history { margin: 20px auto; background: #1e272e; padding: 15px; border-radius: 12px; text-align: left; max-width: 400px; }
+        .hist-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; margin-bottom: 10px; padding-bottom: 5px; }
         .hist-item { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 8px 0; font-size: 0.85rem; }
+        
         .footer { margin-top: 20px; padding-bottom: 40px; display: flex; justify-content: center; gap: 15px; }
         .btn-sec { background: #444; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; }
+        .btn-del { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -73,11 +70,14 @@
 
     <div id="seccion-cricket" style="display:none;">
         <table class="grid"><tbody id="c-body"></tbody></table>
-        <button class="btn-main" style="background:#f1c40f; color:black; box-shadow: 0 4px 0 #c4a00c;" onclick="turno = 1 - turno; render();">CAMBIAR TURNO ➜</button>
+        <button class="btn-main" style="background:#f1c40f; color:black; box-shadow: 0 4px 0 #c4a00c;" onclick="turno = 1 - turno; render();">SIGUIENTE JUGADOR ➜</button>
     </div>
 
     <div class="history">
-        <div style="font-weight:bold; color: #f1c40f; border-bottom:1px solid #444; margin-bottom:10px; padding-bottom:5px;">HISTORIAL</div>
+        <div class="hist-header">
+            <span style="font-weight:bold; color: #f1c40f;">HISTORIAL</span>
+            <button class="btn-del" onclick="borrarHistorialTotal()" title="Borrar todo">🗑️</button>
+        </div>
         <div id="hist-list"></div>
     </div>
 
@@ -134,7 +134,6 @@
         }
 
         function reiniciarPartida() {
-            // Limpieza total
             if(document.getElementById('inputX01')) document.getElementById('inputX01').value = '';
             scores = (modo === 'C') ? [0, 0] : [modo, modo];
             marks = {20:[0,0], 19:[0,0], 18:[0,0], 17:[0,0], 16:[0,0], 15:[0,0], 25:[0,0]};
@@ -189,9 +188,17 @@
             `).join('') || "No hay partidas recientes";
         }
 
+        function borrarHistorialTotal() {
+            if(confirm("¿Seguro que quieres borrar todo el historial de victorias?")) {
+                localStorage.removeItem('darts_vfinal');
+                wins = [0, 0]; // También resetea el contador de la sesión actual
+                mostrarHist();
+                render();
+            }
+        }
+
         mostrarHist();
         render();
     </script>
 </body>
 </html>
-
