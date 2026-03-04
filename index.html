@@ -3,74 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#121212">
-    <title>Cricket Master 4P</title>
+    <title>Cricket Master FIX</title>
     <style>
         :root { --p1: #3498db; --p2: #e74c3c; --p3: #2ecc71; --p4: #f1c40f; --bg: #121212; }
         body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; margin: 0; padding: 5px; }
-        
-        /* Marcadores */
         .header-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .p-box { background: #1e272e; padding: 10px; border-radius: 10px; border: 3px solid transparent; }
-        .p-box.active-0 { border-color: var(--p1); box-shadow: 0 0 10px var(--p1); }
-        .p-box.active-1 { border-color: var(--p2); box-shadow: 0 0 10px var(--p2); }
-        .p-box.active-2 { border-color: var(--p3); box-shadow: 0 0 10px var(--p3); }
-        .p-box.active-3 { border-color: var(--p4); box-shadow: 0 0 10px var(--p4); }
-        .score { font-size: 1.8rem; font-weight: bold; margin: 2px 0; }
-        .p-name { color: #f1c40f; font-size: 0.8rem; }
-
-        /* Cricket Master */
-        .target-info { background: #333; padding: 10px; margin-bottom: 10px; border-radius: 8px; font-weight: bold; }
+        .p-box { background: #1e272e; padding: 10px; border-radius: 10px; border: 3px solid #333; }
+        .active-0 { border-color: var(--p1); box-shadow: 0 0 10px var(--p1); }
+        .active-1 { border-color: var(--p2); box-shadow: 0 0 10px var(--p2); }
+        .active-2 { border-color: var(--p3); box-shadow: 0 0 10px var(--p3); }
+        .active-3 { border-color: var(--p4); box-shadow: 0 0 10px var(--p4); }
+        .score { font-size: 1.8rem; font-weight: bold; }
+        .target-info { background: #f1c40f; color: black; padding: 10px; margin: 10px 0; border-radius: 8px; font-weight: bold; font-size: 1.2rem; }
         .grid { width: 100%; border-collapse: collapse; }
-        .m-btn { width: 45px; height: 45px; font-size: 1.4rem; background: #2c3e50; color: white; border: 1px solid #121212; border-radius: 5px; opacity: 0.3; }
-        .m-btn.active-target { opacity: 1; border: 2px solid #f1c40f; }
-        .m-btn.closed { background: #27ae60; opacity: 1; }
-        .num-col { font-size: 1.2rem; font-weight: bold; color: #f1c40f; width: 30px; }
-
-        /* Botones de Fallo */
-        .penalty-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-        .btn-fail { padding: 15px; background: #c0392b; color: white; border: none; border-radius: 8px; font-weight: bold; }
-        .btn-other { padding: 15px; background: #444; color: white; border: none; border-radius: 8px; font-weight: bold; }
-
-        .footer { margin-top: 15px; display: flex; justify-content: space-around; padding-bottom: 30px; }
-        .btn-sec { background: #333; color: #ccc; border: none; padding: 10px; border-radius: 8px; }
+        .m-btn { width: 55px; height: 50px; font-size: 1.5rem; background: #2c3e50; color: white; border: 1px solid #121212; border-radius: 5px; margin: 2px; }
+        .m-btn.closed { background: #27ae60 !important; }
+        .m-btn.is-target { border: 2px solid white; background: #34495e; }
+        .num-col { font-size: 1.4rem; font-weight: bold; color: #f1c40f; width: 40px; }
+        .btn-fail { width: 48%; padding: 15px; background: #c0392b; color: white; border: none; border-radius: 8px; font-weight: bold; margin: 1%; }
+        .btn-other { width: 48%; padding: 15px; background: #444; color: white; border: none; border-radius: 8px; font-weight: bold; margin: 1%; }
     </style>
 </head>
 <body>
 
     <div class="header-grid">
-        <div id="b0" class="p-box active-0" onclick="setTurno(0)">
-            <div id="n0" class="p-name">P1</div>
-            <div class="score" id="s0">0</div>
-        </div>
-        <div id="b1" class="p-box" onclick="setTurno(1)">
-            <div id="n1" class="p-name">P2</div>
-            <div class="score" id="s1">0</div>
-        </div>
-        <div id="b2" class="p-box" onclick="setTurno(2)">
-            <div id="n2" class="p-name">P3</div>
-            <div class="score" id="s2">0</div>
-        </div>
-        <div id="b3" class="p-box" onclick="setTurno(3)">
-            <div id="n3" class="p-name">P4</div>
-            <div class="score" id="s3">0</div>
-        </div>
+        <div id="b0" class="p-box active-0"><div>P1</div><div class="score" id="s0">0</div></div>
+        <div id="b1" class="p-box"><div>P2</div><div class="score" id="s1">0</div></div>
+        <div id="b2" class="p-box"><div>P3</div><div class="score" id="s2">0</div></div>
+        <div id="b3" class="p-box"><div>P4</div><div class="score" id="s3">0</div></div>
     </div>
 
-    <div class="target-info">OBJETIVO ACTUAL: <span id="current-target" style="color:#f1c40f; font-size: 1.5rem;">20</span></div>
+    <div class="target-info">OBJETIVO: <span id="current-target">20</span></div>
 
     <table class="grid"><tbody id="c-body"></tbody></table>
 
-    <div class="penalty-box">
-        <button class="btn-other" onclick="falloNumero()">FALLO (Otro nº)</button>
-        <button class="btn-fail" onclick="falloFuera()">DARDO FUERA (+25)</button>
+    <div style="margin-top:15px;">
+        <button class="btn-other" onclick="falloNumero()">OTRO Nº</button>
+        <button class="btn-fail" onclick="falloFuera()">FUERA (+25)</button>
     </div>
 
-    <button onclick="siguienteTurno()" style="width:100%; padding:15px; background:#f1c40f; border:none; border-radius:10px; font-weight:bold;">SIGUIENTE JUGADOR ➜</button>
-
-    <div class="footer">
-        <button class="btn-sec" onclick="undo()">↩ Deshacer</button>
-        <button class="btn-sec" onclick="reiniciar()">Reiniciar</button>
+    <div style="margin-top:20px; display:flex; justify-content: space-around;">
+        <button onclick="undo()" style="padding:10px; background:#555; border:none; color:white; border-radius:5px;">↩ Deshacer</button>
+        <button onclick="reiniciar()" style="padding:10px; background:#c0392b; border:none; color:white; border-radius:5px;">Reiniciar</button>
     </div>
 
     <script>
@@ -80,30 +54,27 @@
         let orden = [20, 19, 18, 17, 16, 15, 25];
         let history = [];
 
-        function setTurno(p) { turno = p; render(); }
-        function siguienteTurno() { turno = (turno + 1) % 4; render(); }
-
-        function getTargetActual() {
+        function getTarget() {
             for(let n of orden) {
-                if(!orden.every.call(null, () => {})) { // Solo para lógica
-                    let todosCerrados = true;
-                    for(let p=0; p<4; p++) { if(marks[n][p] < 3) todosCerrados = false; }
-                    if(!todosCerrados) return n;
-                }
+                if(marks[n].some(m => m < 3)) return n;
             }
             return 25;
         }
 
         function markC(n, p) {
-            let target = getTargetActual();
-            if(n !== target) return; // Bloqueado si no es el objetivo
+            let targetActual = getTarget();
+            if(n !== targetActual) {
+                alert("Debes tirar al " + (targetActual === 25 ? "Bull" : targetActual));
+                return;
+            }
+            
             save();
-            turno = p;
+            turno = p; // El turno se ajusta a quien pulses
             
             if(marks[n][p] < 3) {
                 marks[n][p]++;
             } else {
-                // Ya lo tiene cerrado, suma puntos a rivales que NO lo tengan cerrado
+                // Si ya cerró, suma puntos a los que NO han cerrado
                 for(let i=0; i<4; i++) {
                     if(i !== p && marks[n][i] < 3) scores[i] += (n === 25 ? 25 : n);
                 }
@@ -114,35 +85,17 @@
 
         function falloNumero() {
             let n = prompt("¿A qué número le has dado?");
-            let puntos = parseInt(n);
-            if(!isNaN(puntos) && puntos >= 1 && puntos <= 20) {
-                save();
-                scores[turno] += puntos;
-                render();
-            }
+            let pts = parseInt(n);
+            if(!isNaN(pts)) { save(); scores[turno] += pts; render(); }
         }
 
         function falloFuera() {
-            save();
-            scores[turno] += 25;
-            render();
-        }
-
-        function verificarVictoria() {
-            for(let p=0; p<4; p++) {
-                let pCerrado = orden.every(n => marks[n][p] >= 3);
-                if(pCerrado) {
-                    // El primero que cierra gana si tiene menos puntos
-                    let esMinimo = true;
-                    for(let i=0; i<4; i++) { if(scores[i] < scores[p]) esMinimo = false; }
-                    if(esMinimo) { alert("¡GANADOR CRICKET MASTER: P"+(p+1)+"!"); reiniciar(); }
-                }
-            }
+            save(); scores[turno] += 25; render();
         }
 
         function render() {
-            let target = getTargetActual();
-            document.getElementById('current-target').innerText = (target === 25 ? "BULL" : target);
+            let t = getTarget();
+            document.getElementById('current-target').innerText = t === 25 ? "BULL" : t;
             
             for(let i=0; i<4; i++) {
                 document.getElementById('s'+i).innerText = scores[i];
@@ -154,20 +107,26 @@
                 h += `<tr>`;
                 for(let p=0; p<4; p++) {
                     if(p===2) h += `<td class="num-col">${n==25?'B':n}</td>`;
-                    let isTarget = (n === target);
-                    let classBtn = marks[n][p] >= 3 ? 'closed' : (isTarget ? 'active-target' : '');
-                    h += `<td><button class="m-btn ${classBtn}" onclick="markC(${n},${p})">${getS(marks[n][p])}</button></td>`;
+                    let status = marks[n][p] >= 3 ? 'closed' : (n === t ? 'is-target' : '');
+                    h += `<td><button class="m-btn ${status}" onclick="markC(${n},${p})">${getS(marks[n][p])}</button></td>`;
                 }
                 h += `</tr>`;
             });
             document.getElementById('c-body').innerHTML = h;
         }
 
-        function getS(c) { if(c===0) return ""; if(c===1) return "/"; if(c===2) return "X"; return "⊚"; }
+        function getS(c) { return c===0 ? "" : (c===1 ? "/" : (c===2 ? "X" : "⊚")); }
         function save() { history.push({s:[...scores], t:turno, m:JSON.parse(JSON.stringify(marks))}); }
         function undo() { if(history.length>0) { let l=history.pop(); scores=l.s; turno=l.t; marks=l.m; render(); } }
-        function reiniciar() { scores=[0,0,0,0]; marks={20:[0,0,0,0], 19:[0,0,0,0], 18:[0,0,0,0], 17:[0,0,0,0], 16:[0,0,0,0], 15:[0,0,0,0], 25:[0,0,0,0]}; turno=0; render(); }
-        
+        function reiniciar() { if(confirm("¿Reiniciar?")) location.reload(); }
+        function verificarVictoria() {
+            for(let p=0; p<4; p++) {
+                if(orden.every(n => marks[n][p] >= 3)) {
+                    let min = Math.min(...scores);
+                    if(scores[p] === min) { alert("¡GANADOR P" + (p+1) + "!"); location.reload(); }
+                }
+            }
+        }
         render();
     </script>
 </body>
