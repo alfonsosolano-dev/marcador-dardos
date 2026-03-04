@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Darts Master Final</title>
+    <title>Darts Master - Custom Names</title>
     <style>
         :root { --p1: #3498db; --p2: #e74c3c; --bg: #121212; }
         body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; margin: 0; padding: 10px; }
@@ -15,7 +15,8 @@
         .p-box.active-0 { border-color: var(--p1); box-shadow: 0 0 15px var(--p1); }
         .p-box.active-1 { border-color: var(--p2); box-shadow: 0 0 15px var(--p2); }
         .score { font-size: 2.5rem; font-weight: bold; margin: 5px 0; }
-        input { padding: 15px; font-size: 1.8rem; width: 140px; text-align: center; border-radius: 10px; border: none; background: #333; color: white; margin-bottom: 10px; }
+        .p-name { color: #aaa; font-size: 0.9rem; border-bottom: 1px dashed #555; cursor: pointer; }
+        input[type="number"] { padding: 15px; font-size: 1.8rem; width: 140px; text-align: center; border-radius: 10px; border: none; background: #333; color: white; margin-bottom: 10px; }
         .btn-main { padding: 15px 30px; background: #27ae60; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; width: 80%; max-width: 250px; }
         .grid { width: 100%; max-width: 400px; margin: 10px auto; border-collapse: collapse; }
         .m-btn { width: 70px; height: 60px; font-size: 1.8rem; background: #333; color: white; border: 1px solid #444; border-radius: 10px; }
@@ -36,11 +37,13 @@
     <div class="header">
         <div id="b0" class="p-box active-0">
             <div class="score" id="s0">501</div>
-            <div id="w0" style="color:#f1c40f; font-size:0.8rem">0 Wins</div>
+            <div id="n0" class="p-name" onclick="editarNombre(0)">P1</div>
+            <div id="w0" style="color:#f1c40f; font-size:0.7rem; margin-top:5px">0 Wins</div>
         </div>
         <div id="b1" class="p-box">
             <div class="score" id="s1">501</div>
-            <div id="w1" style="color:#f1c40f; font-size:0.8rem">0 Wins</div>
+            <div id="n1" class="p-name" onclick="editarNombre(1)">P2</div>
+            <div id="w1" style="color:#f1c40f; font-size:0.7rem; margin-top:5px">0 Wins</div>
         </div>
     </div>
 
@@ -52,16 +55,16 @@
 
     <div id="seccion-cricket" style="display:none;">
         <table class="grid"><tbody id="c-body"></tbody></table>
-        <button class="btn-main" style="background:#f1c40f; color:black; margin-top:10px;" onclick="turno = 1 - turno; render();">CAMBIAR TURNO ➜</button>
+        <button class="btn-main" style="background:#f1c40f; color:black; margin-top:10px;" onclick="turno = 1 - turno; render();">SIGUIENTE JUGADOR ➜</button>
     </div>
 
     <div class="history">
         <div style="font-weight:bold; border-bottom:1px solid #444; margin-bottom:10px;">HISTORIAL</div>
         <div id="hist-list"></div>
-        <button onclick="localStorage.clear(); location.reload();" style="background:none; border:none; color:#e74c3c; font-size:0.7rem; margin-top:10px; cursor:pointer;">Borrar todo</button>
+        <button onclick="if(confirm('¿Borrar historial?')){localStorage.removeItem('darts_v3'); mostrarHist();}" style="background:none; border:none; color:#e74c3c; font-size:0.7rem; margin-top:10px; cursor:pointer;">Borrar Historial</button>
     </div>
 
-    <div style="margin-top:20px;">
+    <div style="margin-top:20px; padding-bottom: 40px;">
         <button onclick="undo()" style="background:#555; color:white; border:none; padding:10px; border-radius:5px; margin-right:10px;">↩ Deshacer</button>
         <button onclick="reiniciarPartida()" style="background:none; border:1px solid #555; color:#777; padding:10px; border-radius:5px;">Reset Leg</button>
     </div>
@@ -71,8 +74,17 @@
         let turno = 0;
         let scores = [501, 501];
         let wins = [0, 0];
+        let nombres = ["Jugador 1", "Jugador 2"];
         let history = [];
         let marks = {20:[0,0], 19:[0,0], 18:[0,0], 17:[0,0], 16:[0,0], 15:[0,0], 25:[0,0]};
+
+        function editarNombre(p) {
+            let nuevo = prompt("Nombre del Jugador " + (p+1), nombres[p]);
+            if(nuevo) {
+                nombres[p] = nuevo.substring(0, 10);
+                render();
+            }
+        }
 
         function cambiarJuego(m) {
             modo = m;
@@ -88,8 +100,8 @@
             if(isNaN(val)) return;
             save();
             let res = scores[turno] - val;
-            if(res < 0 || res === 1) alert("BUST!");
-            else if(res === 0) { wins[turno]++; registrarFin(`P${turno+1}`, modo); reiniciarPartida(); }
+            if(res < 0 || res === 1) alert("¡BUST!");
+            else if(res === 0) { wins[turno]++; registrarFin(nombres[turno], modo); reiniciarPartida(); }
             else scores[turno] = res;
             turno = 1 - turno;
             document.getElementById('inputX01').value = '';
@@ -97,14 +109,13 @@
         }
 
         function markC(n, p) {
-            if(p !== turno) { if(!confirm("¿Turno de P"+(p+1)+"?")) return; turno = p; }
+            if(p !== turno) { if(!confirm("¿Turno de " + nombres[p] + "?")) return; turno = p; }
             save();
             marks[n][p]++;
             if(marks[n][p] > 3 && marks[n][1-p] < 3) scores[p] += (n === 25 ? 25 : n);
-            
             const nums = [20,19,18,17,16,15,25];
             if(nums.every(num => marks[num][p] >= 3) && scores[p] >= scores[1-p]) {
-                wins[p]++; registrarFin(`P${p+1}`, "Cricket"); reiniciarPartida();
+                wins[p]++; registrarFin(nombres[p], "Cricket"); reiniciarPartida();
             }
             render();
         }
@@ -112,6 +123,8 @@
         function render() {
             document.getElementById('s0').innerText = scores[0];
             document.getElementById('s1').innerText = scores[1];
+            document.getElementById('n0').innerText = nombres[0];
+            document.getElementById('n1').innerText = nombres[1];
             document.getElementById('w0').innerText = wins[0] + " Wins";
             document.getElementById('w1').innerText = wins[1] + " Wins";
             document.getElementById('b0').className = 'p-box' + (turno===0 ? ' active-0' : '');
@@ -146,14 +159,14 @@
         }
 
         function registrarFin(w, t) {
-            let logs = JSON.parse(localStorage.getItem('darts_v2')) || [];
+            let logs = JSON.parse(localStorage.getItem('darts_v3')) || [];
             logs.unshift({ w, t, d: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) });
-            localStorage.setItem('darts_v2', JSON.stringify(logs.slice(0,5)));
+            localStorage.setItem('darts_v3', JSON.stringify(logs.slice(0,5)));
             mostrarHist();
         }
 
         function mostrarHist() {
-            let logs = JSON.parse(localStorage.getItem('darts_v2')) || [];
+            let logs = JSON.parse(localStorage.getItem('darts_v3')) || [];
             document.getElementById('hist-list').innerHTML = logs.map(l => `
                 <div class="hist-item"><span>🏆 ${l.w} (${l.t})</span><span>${l.d}</span></div>
             `).join('') || "No hay partidas";
