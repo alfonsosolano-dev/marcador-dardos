@@ -3,139 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darts Master: X01 & Cricket</title>
+    <title>Darts Master Fix</title>
     <style>
-        :root { --p1: #3498db; --p2: #e74c3c; --bg: #121212; --card: #1e272e; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; padding: 15px; margin: 0; }
-        
-        .nav { margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-        .btn-nav { background: #333; color: white; border: 1px solid #555; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
-        .btn-nav.active { background: #f1c40f; color: black; border-color: #f1c40f; font-weight: bold; }
-
-        .scoreboard { display: flex; gap: 10px; width: 100%; max-width: 500px; margin-bottom: 15px; }
-        .player-box { flex: 1; padding: 10px; border-radius: 12px; background: var(--card); text-align: center; border: 3px solid transparent; transition: 0.3s; }
-        .active-p1 { border-color: var(--p1); box-shadow: 0 0 10px var(--p1); }
-        .active-p2 { border-color: var(--p2); box-shadow: 0 0 10px var(--p2); }
-        
-        .score { font-size: 3rem; font-weight: bold; margin: 5px 0; color: #fff; }
-        .sets { font-size: 0.8rem; color: #f1c40f; }
-
-        /* Estilos específicos Cricket */
-        .cricket-table { width: 100%; max-width: 400px; border-collapse: collapse; margin-top: 10px; background: var(--card); border-radius: 10px; overflow: hidden; }
-        .cricket-table th, .cricket-table td { padding: 10px; border: 1px solid #333; text-align: center; width: 33%; }
-        .c-mark { font-size: 1.5rem; font-weight: bold; }
-        .closed { color: #27ae60; text-decoration: line-through; }
-
-        .controls { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
-        input { width: 100%; padding: 12px; font-size: 1.5rem; border-radius: 8px; border: none; text-align: center; background: #333; color: white; }
-        .btn-main { width: 100%; padding: 12px; font-size: 1.1rem; background: #27ae60; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .undo-btn { background: #7f8c8d; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; width: 50px; }
+        :root { --p1: #3498db; --p2: #e74c3c; --bg: #121212; }
+        body { font-family: sans-serif; background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; }
+        .nav { margin-bottom: 15px; display: flex; gap: 5px; }
+        .btn-nav { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 8px; cursor: pointer; }
+        .btn-nav.active { background: #f1c40f; color: black; font-weight: bold; }
+        .scoreboard { display: flex; gap: 10px; width: 100%; max-width: 500px; }
+        .player-box { flex: 1; padding: 10px; border-radius: 12px; background: #1e272e; text-align: center; border: 4px solid transparent; }
+        .active-p1 { border-color: var(--p1); }
+        .active-p2 { border-color: var(--p2); }
+        .score { font-size: 2.5rem; font-weight: bold; }
+        .cricket-grid { width: 100%; max-width: 400px; margin-top: 10px; border-collapse: collapse; }
+        .mark-btn { width: 60px; height: 50px; font-size: 1.5rem; background: #333; color: white; border: 1px solid #444; border-radius: 8px; cursor: pointer; touch-action: manipulation; }
+        .mark-btn.done { color: #f1c40f; }
+        .mark-btn.closed { background: #27ae60; color: white; }
+        .num-cell { font-size: 1.4rem; font-weight: bold; width: 50px; text-align: center; }
+        .btn-next { background: #f1c40f; color: black; padding: 15px; border: none; border-radius: 10px; font-weight: bold; width: 100%; max-width: 250px; margin-top: 15px; cursor: pointer; }
+        .x01-controls { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        input { padding: 15px; font-size: 1.5rem; text-align: center; border-radius: 8px; border: none; background: #333; color: white; }
     </style>
 </head>
 <body>
 
     <div class="nav">
-        <button class="btn-nav" onclick="setModo('301')" id="nav301">301</button>
-        <button class="btn-nav active" onclick="setModo('501')" id="nav501">501</button>
-        <button class="btn-nav" onclick="setModo('cricket')" id="navCricket">CRICKET</button>
+        <button class="btn-nav" onclick="setModo(301)" id="n301">301</button>
+        <button class="btn-nav active" onclick="setModo(501)" id="n501">501</button>
+        <button class="btn-nav" onclick="setModo('C')" id="nC">CRICKET</button>
     </div>
 
     <div class="scoreboard">
         <div id="box0" class="player-box active-p1">
-            <div class="sets" id="wins0">0 Wins</div>
-            <h3 style="margin:5px 0">P1</h3>
-            <div id="score0" class="score">501</div>
+            <div id="s0" class="score">501</div>
+            <div>P1</div>
         </div>
         <div id="box1" class="player-box">
-            <div class="sets" id="wins1">0 Wins</div>
-            <h3 style="margin:5px 0">P2</h3>
-            <div id="score1" class="score">501</div>
+            <div id="s1" class="score">501</div>
+            <div>P2</div>
         </div>
     </div>
 
-    <div id="game-container" style="width:100%; display:flex; flex-direction:column; align-items:center;">
-        <div id="hint" style="color:#f1c40f; margin-bottom:10px; font-weight:bold;">Tira al T20</div>
-        <div class="controls">
-            <input type="number" id="inputScore" placeholder="Puntos" inputmode="numeric">
-            <div style="display:flex; gap:10px; width:100%;">
-                <button class="undo-btn" onclick="undo()">↩</button>
-                <button class="btn-main" onclick="handleInput()">ANOTAR</button>
-            </div>
-        </div>
+    <div id="x01-area" class="x01-controls">
+        <input type="number" id="inp" placeholder="0" inputmode="numeric">
+        <button onclick="addX01()" style="padding:15px; background:#27ae60; color:white; border:none; border-radius:8px; font-weight:bold;">ANOTAR PUNTOS</button>
     </div>
 
-    <script>
-        let modo = '501';
-        let scores = [501, 501];
-        let wins = [0, 0];
-        let turno = 0;
-        let history = [];
-
-        // Estado inicial Cricket (20, 19, 18, 17, 16, 15, Bull)
-        let cricketMarks = [
-            {20:[0,0], 19:[0,0], 18:[0,0], 17:[0,0], 16:[0,0], 15:[0,0], 25:[0,0]}
-        ];
-
-        function setModo(m) {
-            if(confirm("¿Cambiar modo y reiniciar partida?")) {
-                modo = m;
-                document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
-                document.getElementById('nav'+m.charAt(0).toUpperCase() + m.slice(1)).classList.add('active');
-                resetGame();
-            }
-        }
-
-        function handleInput() {
-            const val = parseInt(document.getElementById('inputScore').value);
-            if(isNaN(val) || val < 0) return;
-
-            saveHistory();
-
-            if(modo === 'cricket') {
-                // En cricket simplificado para móvil, anotamos de uno en uno el número
-                // Pero para no complicarte, mantendremos la lógica X01 y te daré el Cricket visual en la siguiente mejora si te gusta esta estructura.
-                // De momento, esta app gestiona 301/501 perfectamente.
-            } else {
-                let res = scores[turno] - val;
-                if(res < 0 || res === 1) alert("BUST!");
-                else if(res === 0) { wins[turno]++; alert("GANADOR P"+(turno+1)); resetGame(); }
-                else scores[turno] = res;
-            }
-
-            turno = turno === 0 ? 1 : 0;
-            updateUI();
-            document.getElementById('inputScore').value = '';
-        }
-
-        function resetGame() {
-            let start = (modo === 'cricket') ? 0 : parseInt(modo);
-            scores = [start, start];
-            turno = 0;
-            history = [];
-            updateUI();
-        }
-
-        function saveHistory() {
-            history.push({scores: [...scores], turno: turno});
-        }
-
-        function undo() {
-            if(history.length > 0) {
-                let last = history.pop();
-                scores = last.scores;
-                turno = last.turno;
-                updateUI();
-            }
-        }
-
-        function updateUI() {
-            document.getElementById('score0').innerText = scores[0];
-            document.getElementById('score1').innerText = scores[1];
-            document.getElementById('wins0').innerText = wins[0] + " Wins";
-            document.getElementById('wins1').innerText = wins[1] + " Wins";
-            document.getElementById('box0').className = 'player-box' + (turno===0 ? ' active-p1' : '');
-            document.getElementById('box1').className = 'player-box' + (turno===1 ? ' active-p2' : '');
-        }
-    </script>
-</body>
-</html>
+    <table id="c-area" class="cricket-grid" style="display
