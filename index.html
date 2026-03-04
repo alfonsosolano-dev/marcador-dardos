@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Darts Master Pro</title>
+    <title>Darts Master Pro + Historial</title>
     <style>
         :root { --p1: #3498db; --p2: #e74c3c; --bg: #121212; }
         body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; margin: 0; padding: 10px; }
         
         .nav { display: flex; justify-content: center; gap: 5px; margin-bottom: 15px; }
-        .nav-btn { background: #333; color: white; border: 1px solid #555; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
+        .nav-btn { background: #333; color: white; border: 1px solid #555; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
         .nav-btn.active { background: #f1c40f; color: black; font-weight: bold; }
 
         .header { display: flex; justify-content: space-around; margin-bottom: 15px; }
@@ -30,7 +30,13 @@
         .num { font-size: 1.3rem; font-weight: bold; color: #f1c40f; width: 50px; }
 
         .btn-next { padding: 15px; width: 90%; background: #f1c40f; border: none; border-radius: 10px; font-weight: bold; margin-top: 15px; cursor: pointer; }
-        .footer { margin-top: 20px; display: flex; justify-content: center; gap: 20px; }
+        
+        /* Historial */
+        .history-card { margin-top: 30px; background: #1e272e; padding: 15px; border-radius: 10px; max-width: 400px; margin-left: auto; margin-right: auto; text-align: left; }
+        .history-item { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 8px 0; font-size: 0.9rem; }
+        .hist-winner { color: #f1c40f; font-weight: bold; }
+
+        .footer { margin-top: 20px; display: flex; justify-content: center; gap: 20px; padding-bottom: 30px; }
     </style>
 </head>
 <body>
@@ -52,9 +58,11 @@
         </div>
     </div>
 
-    <div id="area-x01" class="x01-input">
-        <input type="number" id="inp" placeholder="0" inputmode="numeric">
-        <button class="btn-add" onclick="addX01()">ANOTAR PUNTOS</button>
+    <div id="area-x01">
+        <div class="x01-input">
+            <input type="number" id="inp" placeholder="0" inputmode="numeric">
+            <button class="btn-add" onclick="addX01()">ANOTAR PUNTOS</button>
+        </div>
     </div>
 
     <table id="area-c" class="grid" style="display:none;">
@@ -63,9 +71,15 @@
 
     <button id="next-btn" class="btn-next" style="display:none;" onclick="turno = 1 - turno; update();">SIGUIENTE JUGADOR ➜</button>
 
+    <div class="history-card">
+        <div style="font-weight:bold; border-bottom: 1px solid #555; padding-bottom: 5px; margin-bottom: 10px;">HISTORIAL RECIENTE</div>
+        <div id="log-partidas"></div>
+    </div>
+
     <div class="footer">
         <button onclick="undo()" style="background:none; border:1px solid #555; color:#aaa; padding:8px; border-radius:5px;">↩ Deshacer</button>
-        <button onclick="reset()" style="background:none; border:1px solid #e74c3c; color:#e74c3c; padding:8px; border-radius:5px;">Reset</button>
+        <button onclick="clearHistory()" style="background:none; border:1px solid #e74c3c; color:#e74c3c; padding:8px; border-radius:5px;">Borrar Historial</button>
+        <button onclick="reset()" style="background:none; border:1px solid #555; color:#aaa; padding:8px; border-radius:5px;">Reiniciar Partida</button>
     </div>
 
     <script>
@@ -74,6 +88,10 @@
         let scores = [501, 501];
         let history = [];
         let marks = {20:[0,0], 19:[0,0], 18:[0,0], 17:[0,0], 16:[0,0], 15:[0,0], 25:[0,0]};
+
+        window.onload = function() {
+            mostrarLog();
+        };
 
         function setModo(m) {
             modo = m;
@@ -88,7 +106,7 @@
             save();
             let res = scores[turno] - v;
             if(res < 0 || res === 1) alert("¡BUST!");
-            else if(res === 0) { alert("¡GANADOR P"+(turno+1)+"!"); reset(); }
+            else if(res === 0) { finalizar(`Jugador ${turno + 1}`, modo); }
             else scores[turno] = res;
             turno = 1 - turno;
             document.getElementById('inp').value = '';
@@ -100,44 +118,6 @@
             save();
             marks[n][p]++;
             if(marks[n][p] > 3 && marks[n][1-p] < 3) scores[p] += (n === 25 ? 25 : n);
-            update();
-        }
-
-        function update() {
-            document.getElementById('s0').innerText = scores[0];
-            document.getElementById('s1').innerText = scores[1];
-            document.getElementById('b0').className = 'p-box' + (turno===0 ? ' active' : '');
-            document.getElementById('b1').className = 'p-box' + (turno===1 ? ' active active-p2' : '');
             
-            if(modo === 'C') {
-                document.getElementById('area-x01').style.display = 'none';
-                document.getElementById('area-c').style.display = 'table';
-                document.getElementById('next-btn').style.display = 'block';
-                let html = "";
-                [20,19,18,17,16,15,25].forEach(n => {
-                    html += `<tr>
-                        <td><button class="m-btn ${marks[n][0]>=3?'closed':''}" onclick="markC(${n},0)">${getS(marks[n][0])}</button></td>
-                        <td class="num">${n==25?'B':n}</td>
-                        <td><button class="m-btn ${marks[n][1]>=3?'closed':''}" onclick="markC(${n},1)">${getS(marks[n][1])}</button></td>
-                    </tr>`;
-                });
-                document.getElementById('c-body').innerHTML = html;
-            } else {
-                document.getElementById('area-x01').style.display = 'flex';
-                document.getElementById('area-c').style.display = 'none';
-                document.getElementById('next-btn').style.display = 'none';
-            }
-        }
-
-        function getS(c) { if(c===0) return ""; if(c===1) return "/"; if(c===2) return "X"; return "⊚"; }
-        function save() { history.push({s:[...scores], t:turno, m:JSON.parse(JSON.stringify(marks))}); }
-        function undo() { if(history.length>0) { let l=history.pop(); scores=l.s; turno=l.t; marks=l.m; update(); } }
-        function reset() {
-            scores = (modo==='C') ? [0,0] : [modo, modo];
-            marks = {20:[0,0], 19:[0,0], 18:[0,0], 17:[0,0], 16:[0,0], 15:[0,0], 25:[0,0]};
-            turno = 0; history = []; update();
-        }
-        update();
-    </script>
-</body>
-</html>
+            // Victoria Cricket: Tener todos los números cerrados y más o igual puntos que el otro
+            const
