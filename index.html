@@ -2,51 +2,77 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Darts Master Fix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Darts Fix</title>
     <style>
-        :root { --p1: #3498db; --p2: #e74c3c; --bg: #121212; }
-        body { font-family: sans-serif; background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; }
-        .nav { margin-bottom: 15px; display: flex; gap: 5px; }
-        .btn-nav { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 8px; cursor: pointer; }
-        .btn-nav.active { background: #f1c40f; color: black; font-weight: bold; }
-        .scoreboard { display: flex; gap: 10px; width: 100%; max-width: 500px; }
-        .player-box { flex: 1; padding: 10px; border-radius: 12px; background: #1e272e; text-align: center; border: 4px solid transparent; }
-        .active-p1 { border-color: var(--p1); }
-        .active-p2 { border-color: var(--p2); }
-        .score { font-size: 2.5rem; font-weight: bold; }
-        .cricket-grid { width: 100%; max-width: 400px; margin-top: 10px; border-collapse: collapse; }
-        .mark-btn { width: 60px; height: 50px; font-size: 1.5rem; background: #333; color: white; border: 1px solid #444; border-radius: 8px; cursor: pointer; touch-action: manipulation; }
-        .mark-btn.done { color: #f1c40f; }
-        .mark-btn.closed { background: #27ae60; color: white; }
-        .num-cell { font-size: 1.4rem; font-weight: bold; width: 50px; text-align: center; }
-        .btn-next { background: #f1c40f; color: black; padding: 15px; border: none; border-radius: 10px; font-weight: bold; width: 100%; max-width: 250px; margin-top: 15px; cursor: pointer; }
-        .x01-controls { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
-        input { padding: 15px; font-size: 1.5rem; text-align: center; border-radius: 8px; border: none; background: #333; color: white; }
+        body { font-family: sans-serif; background: #121212; color: white; text-align: center; margin: 0; padding: 10px; }
+        .grid { width: 100%; max-width: 400px; margin: 20px auto; border-collapse: collapse; }
+        .m-btn { width: 70px; height: 60px; font-size: 1.8rem; background: #333; color: white; border: 2px solid #444; border-radius: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .m-btn.active { color: #f1c40f; border-color: #f1c40f; }
+        .m-btn.closed { background: #27ae60; color: white; }
+        .num { font-size: 1.5rem; font-weight: bold; width: 60px; }
+        .header { display: flex; justify-content: space-around; background: #1e272e; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
+        .p-box { border: 2px solid transparent; padding: 10px; border-radius: 8px; width: 40%; }
+        .active { border-color: #3498db; box-shadow: 0 0 10px #3498db; }
+        .score { font-size: 2rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="nav">
-        <button class="btn-nav" onclick="setModo(301)" id="n301">301</button>
-        <button class="btn-nav active" onclick="setModo(501)" id="n501">501</button>
-        <button class="btn-nav" onclick="setModo('C')" id="nC">CRICKET</button>
-    </div>
-
-    <div class="scoreboard">
-        <div id="box0" class="player-box active-p1">
-            <div id="s0" class="score">501</div>
+    <div class="header">
+        <div id="b0" class="p-box active">
             <div>P1</div>
+            <div id="s0" class="score">0</div>
         </div>
-        <div id="box1" class="player-box">
-            <div id="s1" class="score">501</div>
+        <div id="b1" class="p-box">
             <div>P2</div>
+            <div id="s1" class="score">0</div>
         </div>
     </div>
 
-    <div id="x01-area" class="x01-controls">
-        <input type="number" id="inp" placeholder="0" inputmode="numeric">
-        <button onclick="addX01()" style="padding:15px; background:#27ae60; color:white; border:none; border-radius:8px; font-weight:bold;">ANOTAR PUNTOS</button>
-    </div>
+    <table class="grid">
+        <tbody id="c-body"></tbody>
+    </table>
 
-    <table id="c-area" class="cricket-grid" style="display
+    <button onclick="turno = 1 - turno; update();" style="padding:15px; width:80%; background:#f1c40f; border:none; border-radius:10px; font-weight:bold; font-size:1.2rem;">CAMBIAR TURNO</button>
+    <br><br>
+    <button onclick="location.reload()" style="color:red; background:none; border:none;">Reiniciar App</button>
+
+    <script>
+        let turno = 0;
+        let scores = [0, 0];
+        let marks = {20:[0,0], 19:[0,0], 18:[0,0], 17:[0,0], 16:[0,0], 15:[0,0], 25:[0,0]};
+
+        function mark(n, p) {
+            marks[n][p]++;
+            if (marks[n][p] > 3 && marks[n][1-p] < 3) {
+                scores[p] += n;
+            }
+            update();
+        }
+
+        function update() {
+            document.getElementById('s0').innerText = scores[0];
+            document.getElementById('s1').innerText = scores[1];
+            document.getElementById('b0').className = 'p-box' + (turno===0 ? ' active' : '');
+            document.getElementById('b1').className = 'p-box' + (turno===1 ? ' active' : '');
+            
+            let html = "";
+            [20,19,18,17,16,15,25].forEach(n => {
+                html += `<tr>
+                    <td><button class="m-btn ${marks[n][0]>=3?'closed':'active'}" onclick="mark(${n},0)">${getS(marks[n][0])}</button></td>
+                    <td class="num">${n==25?'B':n}</td>
+                    <td><button class="m-btn ${marks[n][1]>=3?'closed':'active'}" onclick="mark(${n},1)">${getS(marks[n][1])}</button></td>
+                </tr>`;
+            });
+            document.getElementById('c-body').innerHTML = html;
+        }
+
+        function getS(c) {
+            if(c===0) return ""; if(c===1) return "/"; if(c===2) return "X"; return "⊚";
+        }
+
+        update();
+    </script>
+</body>
+</html>
