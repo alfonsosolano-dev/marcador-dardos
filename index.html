@@ -3,27 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Darts Master - Custom Names</title>
+    
+    <meta name="theme-color" content="#121212">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3076/3076865.png">
+    
+    <title>Darts App Pro</title>
     <style>
         :root { --p1: #3498db; --p2: #e74c3c; --bg: #121212; }
-        body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; margin: 0; padding: 10px; }
+        body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; margin: 0; padding: 10px; overflow-x: hidden; }
+        
+        /* Navegación App */
         .nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .nav-btn { background: #333; color: white; border: 2px solid #555; padding: 12px; border-radius: 8px; cursor: pointer; flex: 1; max-width: 100px; font-weight: bold; }
+        .nav-btn { background: #333; color: white; border: 2px solid #555; padding: 12px; border-radius: 8px; cursor: pointer; flex: 1; max-width: 100px; font-weight: bold; -webkit-tap-highlight-color: transparent; }
         .nav-btn.active { background: #f1c40f; color: black; border-color: #f1c40f; }
+
+        /* Marcadores */
         .header { display: flex; justify-content: space-around; margin-bottom: 20px; }
-        .p-box { background: #1e272e; padding: 15px; border-radius: 12px; width: 40%; border: 4px solid transparent; }
+        .p-box { background: #1e272e; padding: 15px; border-radius: 12px; width: 40%; border: 4px solid transparent; transition: 0.3s; }
         .p-box.active-0 { border-color: var(--p1); box-shadow: 0 0 15px var(--p1); }
         .p-box.active-1 { border-color: var(--p2); box-shadow: 0 0 15px var(--p2); }
-        .score { font-size: 2.5rem; font-weight: bold; margin: 5px 0; }
-        .p-name { color: #aaa; font-size: 0.9rem; border-bottom: 1px dashed #555; cursor: pointer; }
+        .score { font-size: 2.8rem; font-weight: bold; margin: 5px 0; }
+        .p-name { color: #aaa; font-size: 1rem; border-bottom: 1px dashed #555; display: inline-block; min-width: 50px; }
+
+        /* X01 */
         input[type="number"] { padding: 15px; font-size: 1.8rem; width: 140px; text-align: center; border-radius: 10px; border: none; background: #333; color: white; margin-bottom: 10px; }
-        .btn-main { padding: 15px 30px; background: #27ae60; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1rem; width: 80%; max-width: 250px; }
-        .grid { width: 100%; max-width: 400px; margin: 10px auto; border-collapse: collapse; }
-        .m-btn { width: 70px; height: 60px; font-size: 1.8rem; background: #333; color: white; border: 1px solid #444; border-radius: 10px; }
+        .btn-main { padding: 18px 30px; background: #27ae60; color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 1.2rem; width: 85%; max-width: 300px; box-shadow: 0 4px 0 #1e8449; }
+        .btn-main:active { transform: translateY(2px); box-shadow: 0 2px 0 #1e8449; }
+
+        /* Cricket */
+        .grid { width: 100%; max-width: 400px; margin: 10px auto; border-collapse: separate; border-spacing: 5px; }
+        .m-btn { width: 75px; height: 65px; font-size: 2rem; background: #2c3e50; color: white; border: none; border-radius: 12px; -webkit-tap-highlight-color: transparent; }
         .m-btn.closed { background: #27ae60; color: white; }
-        .num { font-size: 1.5rem; font-weight: bold; color: #f1c40f; }
-        .history { margin-top: 20px; background: #1e272e; padding: 15px; border-radius: 10px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto; }
-        .hist-item { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 5px 0; font-size: 0.8rem; }
+        .num { font-size: 1.6rem; font-weight: bold; color: #f1c40f; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+        /* Historial */
+        .history { margin: 20px auto; background: #1e272e; padding: 15px; border-radius: 12px; text-align: left; max-width: 400px; }
+        .hist-item { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 8px 0; font-size: 0.9rem; }
+        
+        .footer { margin-top: 20px; padding-bottom: 50px; display: flex; justify-content: center; gap: 15px; }
+        .btn-sec { background: #333; color: #ccc; border: 1px solid #555; padding: 10px 15px; border-radius: 8px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -38,35 +58,34 @@
         <div id="b0" class="p-box active-0">
             <div class="score" id="s0">501</div>
             <div id="n0" class="p-name" onclick="editarNombre(0)">P1</div>
-            <div id="w0" style="color:#f1c40f; font-size:0.7rem; margin-top:5px">0 Wins</div>
+            <div id="w0" style="color:#f1c40f; font-size:0.8rem; margin-top:5px">0 Wins</div>
         </div>
         <div id="b1" class="p-box">
             <div class="score" id="s1">501</div>
             <div id="n1" class="p-name" onclick="editarNombre(1)">P2</div>
-            <div id="w1" style="color:#f1c40f; font-size:0.7rem; margin-top:5px">0 Wins</div>
+            <div id="w1" style="color:#f1c40f; font-size:0.8rem; margin-top:5px">0 Wins</div>
         </div>
     </div>
 
     <div id="seccion-x01">
-        <input type="number" id="inputX01" placeholder="Score" inputmode="numeric">
+        <input type="number" id="inputX01" placeholder="0" inputmode="numeric">
         <br>
-        <button class="btn-main" onclick="anotarX01()">ANOTAR</button>
+        <button class="btn-main" onclick="anotarX01()">ANOTAR DARDOS</button>
     </div>
 
     <div id="seccion-cricket" style="display:none;">
         <table class="grid"><tbody id="c-body"></tbody></table>
-        <button class="btn-main" style="background:#f1c40f; color:black; margin-top:10px;" onclick="turno = 1 - turno; render();">SIGUIENTE JUGADOR ➜</button>
+        <button class="btn-main" style="background:#f1c40f; color:black; box-shadow: 0 4px 0 #c4a00c;" onclick="turno = 1 - turno; render();">SIGUIENTE JUGADOR ➜</button>
     </div>
 
     <div class="history">
-        <div style="font-weight:bold; border-bottom:1px solid #444; margin-bottom:10px;">HISTORIAL</div>
+        <div style="font-weight:bold; color: #f1c40f; border-bottom:1px solid #444; margin-bottom:10px; padding-bottom:5px;">HISTORIAL RECIENTE</div>
         <div id="hist-list"></div>
-        <button onclick="if(confirm('¿Borrar historial?')){localStorage.removeItem('darts_v3'); mostrarHist();}" style="background:none; border:none; color:#e74c3c; font-size:0.7rem; margin-top:10px; cursor:pointer;">Borrar Historial</button>
     </div>
 
-    <div style="margin-top:20px; padding-bottom: 40px;">
-        <button onclick="undo()" style="background:#555; color:white; border:none; padding:10px; border-radius:5px; margin-right:10px;">↩ Deshacer</button>
-        <button onclick="reiniciarPartida()" style="background:none; border:1px solid #555; color:#777; padding:10px; border-radius:5px;">Reset Leg</button>
+    <div class="footer">
+        <button class="btn-sec" onclick="undo()">↩ Deshacer</button>
+        <button class="btn-sec" onclick="reiniciarPartida()">Reiniciar</button>
     </div>
 
     <script>
@@ -80,18 +99,13 @@
 
         function editarNombre(p) {
             let nuevo = prompt("Nombre del Jugador " + (p+1), nombres[p]);
-            if(nuevo) {
-                nombres[p] = nuevo.substring(0, 10);
-                render();
-            }
+            if(nuevo) { nombres[p] = nuevo.substring(0, 12); render(); }
         }
 
         function cambiarJuego(m) {
             modo = m;
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            if(m === 301) document.getElementById('btn301').classList.add('active');
-            if(m === 501) document.getElementById('btn501').classList.add('active');
-            if(m === 'C') document.getElementById('btnC').classList.add('active');
+            document.getElementById('btn'+m).classList.add('active');
             reiniciarPartida();
         }
 
@@ -109,7 +123,7 @@
         }
 
         function markC(n, p) {
-            if(p !== turno) { if(!confirm("¿Turno de " + nombres[p] + "?")) return; turno = p; }
+            if(p !== turno) { if(!confirm("¿Es el turno de " + nombres[p] + "?")) return; turno = p; }
             save();
             marks[n][p]++;
             if(marks[n][p] > 3 && marks[n][1-p] < 3) scores[p] += (n === 25 ? 25 : n);
@@ -159,14 +173,14 @@
         }
 
         function registrarFin(w, t) {
-            let logs = JSON.parse(localStorage.getItem('darts_v3')) || [];
+            let logs = JSON.parse(localStorage.getItem('darts_final')) || [];
             logs.unshift({ w, t, d: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) });
-            localStorage.setItem('darts_v3', JSON.stringify(logs.slice(0,5)));
+            localStorage.setItem('darts_final', JSON.stringify(logs.slice(0,5)));
             mostrarHist();
         }
 
         function mostrarHist() {
-            let logs = JSON.parse(localStorage.getItem('darts_v3')) || [];
+            let logs = JSON.parse(localStorage.getItem('darts_final')) || [];
             document.getElementById('hist-list').innerHTML = logs.map(l => `
                 <div class="hist-item"><span>🏆 ${l.w} (${l.t})</span><span>${l.d}</span></div>
             `).join('') || "No hay partidas";
