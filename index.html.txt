@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darts Scoreboard Pro</title>
+    <style>
+        :root { --p1: #3498db; --p2: #e74c3c; }
+        body { font-family: 'Segoe UI', sans-serif; background: #121212; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        
+        .scoreboard { display: flex; gap: 15px; width: 100%; max-width: 500px; margin-bottom: 10px; }
+        .player-box { flex: 1; padding: 15px; border-radius: 12px; background: #1e272e; text-align: center; border: 4px solid transparent; transition: 0.3s; }
+        .active-p1 { border-color: var(--p1); box-shadow: 0 0 15px var(--p1); }
+        .active-p2 { border-color: var(--p2); box-shadow: 0 0 15px var(--p2); }
+        
+        .score { font-size: 3.5rem; font-weight: bold; margin: 5px 0; }
+        .sets-count { font-size: 1rem; color: #f1c40f; font-weight: bold; background: #000; padding: 2px 10px; border-radius: 10px; }
+        
+        #checkout-hint { height: 30px; color: #f1c40f; font-weight: bold; margin-bottom: 15px; }
+        
+        .controls { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 10px; }
+        input { width: 80%; max-width: 180px; padding: 15px; font-size: 1.8rem; border-radius: 10px; border: none; text-align: center; background: #333; color: white; }
+        
+        .btn-group { display: flex; gap: 10px; width: 90%; max-width: 250px; }
+        .btn-add { flex: 2; padding: 15px; font-size: 1.1rem; background: #27ae60; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .btn-undo { flex: 1; padding: 15px; background: #7f8c8d; color: white; border: none; border-radius: 10px; cursor: pointer; }
+
+        .history-section { margin-top: 30px; width: 100%; max-width: 400px; background: #1e272e; padding: 15px; border-radius: 12px; }
+        .history-title { text-align: center; color: #bdc3c7; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 10px; font-size: 0.9rem; }
+        .history-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; font-size: 0.85rem; }
+        .clear-btn { background: none; border: 1px solid #e74c3c; color: #e74c3c; cursor: pointer; padding: 8px; border-radius: 5px; font-size: 0.7rem; margin-top: 15px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <h2 style="margin-bottom: 10px;">Darts Master 🎯</h2>
+
+    <div class="scoreboard">
+        <div id="box1" class="player-box active-p1">
+            <span class="sets-count" id="wins1">0 Wins</span>
+            <h3 style="margin:10px 0 0 0">P1</h3>
+            <div id="score1" class="score">501</div>
+        </div>
+        <div id="box2" class="player-box">
+            <span class="sets-count" id="wins2">0 Wins</span>
+            <h3 style="margin:10px 0 0 0">P2</h3>
+            <div id="score2" class="score">501</div>
+        </div>
+    </div>
+
+    <div id="checkout-hint">¡A por el Triple 20!</div>
+
+    <div class="controls">
+        <input type="number" id="inputScore" placeholder="Score" inputmode="numeric">
+        <div class="btn-group">
+            <button class="btn-undo" onclick="deshacer()">↩</button>
+            <button class="btn-add" onclick="registrarTiro()">ANOTAR</button>
+        </div>
+    </div>
+
+    <div class="history-section">
+        <div class="history-title">ÚLTIMAS PARTIDAS</div>
+        <div id="history-list"></div>
+        <button class="clear-btn" onclick="limpiarTodo()">RESETEAR TODO EL MARCADOR</button>
+    </div>
+
+    <script>
+        let scores = [501, 501];
+        let turno = 0;
+        let historialPasos = [];
+        let globalWins = [0, 0];
+
+        window.onload = function() {
+            cargarDatos();
+            mostrarHistorial();
+        };
+
+        function registrarTiro() {
+            const input = document.getElementById('inputScore');
+            const puntos = parseInt(input.value);
+            if (isNaN(puntos) || puntos < 0 || puntos > 180) return;
+
+            historialPasos.push({ scores: [...scores], turno: turno });
+
+            const resto = scores[turno] - puntos;
+            if (resto < 0 || resto === 1) {
+                alert("¡BUST!");
+            } else if (resto === 0) {
+                finalizarPartida(turno);
+                return;
+            } else {
+                scores[turno] = resto;
+            }
+
+            turno = (turno === 0) ? 1 : 0;
+            actualizarUI();
+            input.value = '';
+            input.focus();
+        }
+
+        function finalizarPartida(ganadorIndex) {
+            globalWins[ganadorIndex]++;
+            
+            // Guardar en historial
+            let partidas = JSON.parse(localStorage.getItem('dartsHistory')) || [];
+            partidas.unshift({
+                ganador: `Jugador ${ganadorIndex + 1}`,
+                fecha: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+            });
+            
+            localStorage.setItem('dartsHistory', JSON.stringify(partidas.slice(0, 10)));
+            localStorage.setItem('dartsWins', JSON.stringify(globalWins));
+            
+            alert(`¡JUGADOR ${ganadorIndex + 1} GANA LA PARTIDA!`);
+            reiniciarLeg();
+        }
+
+        function cargarDatos() {
+            globalWins = JSON.parse(localStorage.getItem('dartsWins')) || [0, 0];
+            actualizarUI();
+        }
+
+        function mostrarHistorial() {
+            const lista = document.getElementById('history-list');
+            const partidas = JSON.parse(localStorage.getItem('dartsHistory')) || [];
+            lista.innerHTML = partidas.map(p => `
+                <div class="history-item">
+                    <span>🏆 ${p.ganador}</span>
+                    <span style="color:#7f8c8d">${p.fecha}</span>
+                </div>
+            `).join('') || '<p style="text-align:center; color:#555">Sin partidas</p>';
+        }
+
+        function limpiarTodo() {
+            if(confirm("¿Seguro? Se borrarán todas las victorias y el historial.")) {
+                localStorage.clear();
+                globalWins = [0, 0];
+                reiniciarLeg();
+                mostrarHistorial();
+            }
+        }
+
+        function reiniciarLeg() {
+            scores = [501, 501];
+            turno = 0;
+            historialPasos = [];
+            actualizarUI();
+            mostrarHistorial();
+            document.getElementById('inputScore').value = '';
+        }
+
+        function deshacer() {
+            if (historialPasos.length === 0) return;
+            const ultimo = historialPasos.pop();
+            scores = ultimo.scores;
+            turno = ultimo.turno;
+            actualizarUI();
+        }
+
+        function actualizarUI() {
+            document.getElementById('score1').innerText = scores[0];
+            document.getElementById('score2').innerText = scores[1];
+            document.getElementById('wins1').innerText = `${globalWins[0]} Wins`;
+            document.getElementById('wins2').innerText = `${globalWins[1]} Wins`;
+            document.getElementById('box1').classList.toggle('active-p1', turno === 0);
+            document.getElementById('box2').classList.toggle('active-p2', turno === 1);
+            
+            const pActual = scores[turno];
+            const hint = document.getElementById('checkout-hint');
+            hint.innerText = (pActual <= 170) ? "¡Posibilidad de cierre!" : "Sigue sumando...";
+        }
+    </script>
+</body>
+</html>
