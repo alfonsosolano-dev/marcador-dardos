@@ -3,75 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Darts Master 4P Pro</title>
+    <title>Darts 4P Ultimate</title>
     <style>
         :root { --p1: #3498db; --p2: #e74c3c; --p3: #2ecc71; --p4: #f1c40f; --bg: #121212; }
         body { font-family: sans-serif; background: var(--bg); color: white; text-align: center; margin: 0; padding: 5px; }
         
-        .nav { display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; }
-        .nav-btn { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 8px; flex: 1; font-weight: bold; font-size: 0.7rem; }
+        /* Navegación */
+        .nav { display: flex; justify-content: center; gap: 5px; margin-bottom: 15px; }
+        .nav-btn { background: #333; color: white; border: 1px solid #555; padding: 12px; border-radius: 8px; flex: 1; font-weight: bold; cursor: pointer; }
         .nav-btn.active { background: #f1c40f; color: black; border-color: #f1c40f; }
 
+        /* Marcadores */
         .header-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .p-box { background: #1e272e; padding: 10px; border-radius: 10px; border: 3px solid #333; }
+        .p-box { background: #1e272e; padding: 10px; border-radius: 10px; border: 3px solid #333; transition: 0.2s; }
         .active-0 { border-color: var(--p1); box-shadow: 0 0 10px var(--p1); }
         .active-1 { border-color: var(--p2); box-shadow: 0 0 10px var(--p2); }
         .active-2 { border-color: var(--p3); box-shadow: 0 0 10px var(--p3); }
         .active-3 { border-color: var(--p4); box-shadow: 0 0 10px var(--p4); }
-        
-        .score { font-size: 1.8rem; font-weight: bold; }
-        .p-info { color: #f1c40f; font-size: 0.7rem; margin-top: 5px; }
+        .score { font-size: 1.8rem; font-weight: bold; margin: 2px 0; }
+        .p-info { color: #f1c40f; font-size: 0.7rem; font-weight: bold; }
 
-        .target-info { background: #f1c40f; color: black; padding: 8px; margin: 10px 0; border-radius: 8px; font-weight: bold; }
-        
+        /* Cricket Master */
+        .target-info { background: #f1c40f; color: black; padding: 10px; margin: 10px 0; border-radius: 8px; font-weight: bold; font-size: 1.1rem; }
         .grid { width: 100%; border-collapse: collapse; }
-        .m-btn { width: 50px; height: 45px; font-size: 1.4rem; background: #2c3e50; color: white; border: 1px solid #121212; border-radius: 5px; margin: 2px; opacity: 0.2; }
-        .m-btn.is-turn { opacity: 1; border: 1px solid white; }
-        .m-btn.closed { background: #27ae60 !important; opacity: 1; }
-        .num-col { font-size: 1.3rem; font-weight: bold; color: #f1c40f; width: 35px; }
+        .m-btn { width: 55px; height: 50px; font-size: 1.5rem; background: #2c3e50; color: white; border: 1px solid #121212; border-radius: 5px; margin: 2px; }
+        .m-btn.is-target { border: 2px solid white; box-shadow: inset 0 0 5px white; }
+        .m-btn.closed { background: #27ae60 !important; }
+        .num-col { font-size: 1.4rem; font-weight: bold; color: #f1c40f; width: 40px; }
 
-        input[type="number"] { padding: 15px; font-size: 1.8rem; width: 120px; text-align: center; border-radius: 10px; border: none; background: #333; color: white; margin-bottom: 10px; }
-        .btn-main { padding: 15px; background: #27ae60; color: white; border: none; border-radius: 10px; font-weight: bold; width: 90%; margin-bottom: 10px; }
-        .btn-fail { width: 48%; padding: 12px; background: #c0392b; color: white; border: none; border-radius: 8px; font-weight: bold; margin: 1%; }
+        /* Inputs X01 */
+        input[type="number"] { padding: 15px; font-size: 1.8rem; width: 130px; text-align: center; border-radius: 10px; border: none; background: #333; color: white; margin-bottom: 10px; }
+        .btn-main { padding: 18px; background: #27ae60; color: white; border: none; border-radius: 12px; font-weight: bold; width: 90%; font-size: 1.1rem; }
+        .btn-pen { width: 48%; padding: 15px; background: #c0392b; color: white; border: none; border-radius: 8px; font-weight: bold; margin: 1%; }
     </style>
 </head>
 <body>
 
     <div class="nav">
-        <button class="nav-btn" onclick="cambiarJuego(301)" id="btn301">301</button>
-        <button class="nav-btn active" onclick="cambiarJuego(501)" id="btn501">501</button>
-        <button class="nav-btn" onclick="cambiarJuego('C')" id="btnC">CRICKET MASTER</button>
+        <button class="nav-btn" onclick="initJuego(301)" id="btn301">301</button>
+        <button class="nav-btn active" onclick="initJuego(501)" id="btn501">501</button>
+        <button class="nav-btn" onclick="initJuego('C')" id="btnC">CRICKET MASTER</button>
     </div>
 
     <div class="header-grid">
-        <div id="b0" class="p-box active-0"><div id="n0">P1</div><div class="score" id="s0">501</div><div class="p-info" id="d0">Dardos: 0/3</div></div>
-        <div id="b1" class="p-box"><div id="n1">P2</div><div class="score" id="s1">501</div><div class="p-info" id="d1">Dardos: 0/3</div></div>
-        <div id="b2" class="p-box"><div id="n2">P3</div><div class="score" id="s2">501</div><div class="p-info" id="d2">Dardos: 0/3</div></div>
-        <div id="b3" class="p-box"><div id="n3">P4</div><div class="score" id="s3">501</div><div class="p-info" id="d3">Dardos: 0/3</div></div>
+        <div id="b0" class="p-box active-0" onclick="turno=0; render();"><div>P1</div><div class="score" id="s0">0</div><div class="p-info" id="d0">0/3</div></div>
+        <div id="b1" class="p-box" onclick="turno=1; render();"><div>P2</div><div class="score" id="s1">0</div><div class="p-info" id="d1">0/3</div></div>
+        <div id="b2" class="p-box" onclick="turno=2; render();"><div>P3</div><div class="score" id="s2">0</div><div class="p-info" id="d2">0/3</div></div>
+        <div id="b3" class="p-box" onclick="turno=3; render();"><div>P4</div><div class="score" id="s3">0</div><div class="p-info" id="d3">0/3</div></div>
     </div>
 
-    <div id="target-msg" class="target-info">OBJETIVO: <span id="current-target">20</span></div>
-
     <div id="seccion-x01">
-        <input type="number" id="inputX01" placeholder="Dardo" inputmode="numeric">
+        <input type="number" id="inpX" placeholder="Puntos" inputmode="numeric">
         <br>
-        <button class="btn-main" onclick="anotarX01()">ANOTAR DARDO</button>
-        <div style="display:flex; justify-content:center;">
-             <button class="btn-fail" style="background:#444; width:90%" onclick="anotarCero()">FALLO / CERO (0)</button>
+        <button class="btn-main" onclick="addX01()">ANOTAR DARDO</button>
+        <div style="margin-top:10px;">
+            <button class="btn-pen" style="background:#444; width:90%" onclick="addDardo(0)">FALLO / CERO (0)</button>
         </div>
     </div>
 
     <div id="seccion-cricket" style="display:none;">
+        <div class="target-info">OBJETIVO: <span id="cur-target">20</span></div>
         <table class="grid"><tbody id="c-body"></tbody></table>
         <div style="margin-top:10px;">
-            <button class="btn-fail" onclick="falloFuera()">FUERA (+25)</button>
-            <button class="btn-fail" style="background:#444" onclick="falloNumero()">OTRO Nº</button>
+            <button class="btn-pen" onclick="addDardo(25)">FUERA (+25)</button>
+            <button class="btn-pen" style="background:#444" onclick="failNum()">OTRO Nº</button>
         </div>
     </div>
 
-    <button onclick="sigTurno()" class="btn-main" style="background:#f1c40f; color:black; margin-top:10px;">PASAR TURNO MANUALLY ➜</button>
+    <button onclick="nextT()" class="btn-main" style="background:#f1c40f; color:black; margin-top:15px;">SIGUIENTE JUGADOR ➜</button>
 
-    <div style="display:flex; justify-content: center; gap: 10px; margin-top: 15px; padding-bottom: 30px;">
+    <div style="display:flex; justify-content:center; gap:10px; margin-top:20px; padding-bottom:40px;">
         <button onclick="undo()" style="padding:10px; background:#555; border:none; color:white; border-radius:5px;">↩ Deshacer</button>
         <button onclick="reiniciar()" style="padding:10px; background:#c0392b; border:none; color:white; border-radius:5px;">Reset</button>
     </div>
@@ -82,10 +83,10 @@
         let scores = [501, 501, 501, 501];
         let marks = {20:[0,0,0,0], 19:[0,0,0,0], 18:[0,0,0,0], 17:[0,0,0,0], 16:[0,0,0,0], 15:[0,0,0,0], 25:[0,0,0,0]};
         let orden = [20, 19, 18, 17, 16, 15, 25];
-        let history = [];
-        let dardoEnTurno = 0;
+        let dardos = 0;
+        let hist = [];
 
-        function cambiarJuego(m) {
+        function initJuego(m) {
             modo = m;
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn'+(m==='C'?'C':m)).classList.add('active');
@@ -97,66 +98,48 @@
             return 25;
         }
 
-        function anotarX01() {
-            let inp = document.getElementById('inputX01');
-            let val = parseInt(inp.value);
+        function addX01() {
+            let val = parseInt(document.getElementById('inpX').value);
             if(isNaN(val)) return;
             save();
             let res = scores[turno] - val;
-            if(res < 0 || res === 1) {
-                alert("¡BUST! Turno termina.");
-                dardoEnTurno = 3; 
-            } else if(res === 0) {
-                alert("¡GANADOR P" + (turno+1) + "!");
-                reiniciar();
-                return;
-            } else {
-                scores[turno] = res;
-                dardoEnTurno++;
-            }
-            inp.value = '';
-            if(dardoEnTurno >= 3) sigTurno(); else render();
-        }
-
-        function anotarCero() {
-            save();
-            dardoEnTurno++;
-            if(dardoEnTurno >= 3) sigTurno(); else render();
+            if(res < 0 || res === 1) { alert("¡BUST!"); dardos = 3; }
+            else if(res === 0) { alert("¡VICTORIA!"); reiniciar(); return; }
+            else { scores[turno] = res; dardos++; }
+            document.getElementById('inpX').value = '';
+            if(dardos >= 3) nextT(); else render();
         }
 
         function markC(n, p) {
             if(p !== turno) return;
-            let target = getTarget();
-            if(n !== target) return;
+            let t = getTarget();
+            if(n !== t) { alert("Tira al " + (t===25?'Bull':t)); return; }
             save();
             if(marks[n][p] < 3) marks[n][p]++;
             else { for(let i=0; i<4; i++) { if(i!==p && marks[n][i] < 3) scores[i] += (n===25?25:n); } }
-            dardoEnTurno++;
-            if(dardoEnTurno >= 3) sigTurno(); else { verificarVictoriaMaster(); render(); }
+            dardos++;
+            if(dardos >= 3) nextT(); else { checkWinC(); render(); }
         }
 
-        function falloNumero() {
-            let pts = parseInt(prompt("¿Puntos fallados?"));
-            if(!isNaN(pts)) { save(); scores[turno] += pts; dardoEnTurno++; if(dardoEnTurno >= 3) sigTurno(); else render(); }
+        function addDardo(pts) { save(); scores[turno] += pts; dardos++; if(dardos >= 3) nextT(); else render(); }
+        
+        function failNum() {
+            let p = parseInt(prompt("Puntos del número errado:"));
+            if(!isNaN(p)) addDardo(p);
         }
 
-        function falloFuera() { 
-            save(); scores[turno] += 25; dardoEnTurno++; if(dardoEnTurno >= 3) sigTurno(); else render(); 
-        }
-
-        function sigTurno() { dardoEnTurno = 0; turno = (turno + 1) % 4; render(); }
+        function nextT() { dardos = 0; turno = (turno + 1) % 4; render(); }
 
         function render() {
             let t = getTarget();
-            document.getElementById('current-target').innerText = t === 25 ? "BULL" : t;
-            document.getElementById('target-msg').style.display = modo === 'C' ? 'block' : 'none';
-            document.getElementById('seccion-x01').style.display = modo === 'C' ? 'none' : 'block';
-            document.getElementById('seccion-cricket').style.display = modo === 'C' ? 'block' : 'none';
+            document.getElementById('cur-target').innerText = (t===25?'BULL':t);
+            document.getElementById('seccion-x01').style.display = (modo==='C'?'none':'block');
+            document.getElementById('seccion-cricket').style.display = (modo==='C'?'block':'none');
 
             for(let i=0; i<4; i++) {
                 document.getElementById('s'+i).innerText = scores[i];
-                document.getElementById('b'+i).className = 'p-box' + (turno===i ? ' active-'+i : '');
-                document.getElementById('d'+i).innerText = (turno===i) ? "Dardos: " + dardoEnTurno + "/3" : "Esperando...";
+                document.getElementById('b'+i).className = 'p-box' + (turno===i?' active-'+i:'');
+                document.getElementById('d'+i).innerText = (turno===i ? dardos+"/3" : "Wait");
             }
 
             if(modo === 'C') {
@@ -165,9 +148,8 @@
                     h += `<tr>`;
                     for(let p=0; p<4; p++) {
                         if(p===2) h += `<td class="num-col">${n==25?'B':n}</td>`;
-                        let isTurn = (p === turno && n === t);
-                        let isClosed = marks[n][p] >= 3;
-                        h += `<td><button class="m-btn ${isClosed?'closed':''} ${isTurn?'is-turn':''}" onclick="markC(${n},${p})">${getS(marks[n][p])}</button></td>`;
+                        let status = marks[n][p]>=3 ? 'closed' : (n===t && p===turno ? 'is-target' : '');
+                        h += `<td><button class="m-btn ${status}" onclick="markC(${n},${p})">${getSym(marks[n][p])}</button></td>`;
                     }
                     h += `</tr>`;
                 });
@@ -175,9 +157,22 @@
             }
         }
 
-        function getS(c) { return c===0?"":(c===1?"/":(c===2?"X":"⊚")); }
-        function save() { history.push({s:[...scores], t:turno, m:JSON.parse(JSON.stringify(marks)), d:dardoEnTurno}); }
-        function undo() { if(history.length>0) { let l=history.pop(); scores=l.s; turno=l.t; marks=l.m; dardoEnTurno=l.d; render(); } }
+        function getSym(c) { return c===0?"":(c===1?"/":(c===2?"X":"⊚")); }
+        function save() { hist.push(JSON.stringify({s:scores, t:turno, m:marks, d:dardos})); }
+        function undo() { if(hist.length>0) { let l=JSON.parse(hist.pop()); scores=l.s; turno=l.t; marks=l.m; dardos=l.d; render(); } }
         function reiniciar() {
-            scores = modo === 'C' ? [0,0,0,0] : [modo, modo, modo, modo];
-            marks = {20:[0,0,0,0], 19:[0,0,0,0], 18:[0,0,0,0], 17:[0,0,0,0], 16:[0,0,0,0], 15:[0,0,0,0], 25:
+            scores = modo==='C' ? [0,0,0,0] : [modo,modo,modo,modo];
+            marks = {20:[0,0,0,0], 19:[0,0,0,0], 18:[0,0,0,0], 17:[0,0,0,0], 16:[0,0,0,0], 15:[0,0,0,0], 25:[0,0,0,0]};
+            turno=0; dardos=0; render();
+        }
+        function checkWinC() {
+            for(let p=0; p<4; p++) {
+                if(orden.every(n => marks[n][p]>=3)) {
+                    if(scores[p] === Math.min(...scores)) { alert("¡GANADOR P"+(p+1)+"!"); reiniciar(); }
+                }
+            }
+        }
+        render();
+    </script>
+</body>
+</html>
