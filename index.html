@@ -3,185 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Darts Tab Pro</title>
+    <title>Darts Master Tabs</title>
     <style>
-        :root { --p1: #3498db; --p2: #e74c3c; --p3: #2ecc71; --p4: #f1c40f; --bg: #0f1418; --accent: #f1c40f; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        :root { --p1: #3498db; --p2: #e74c3c; --p3: #2ecc71; --p4: #f1c40f; --bg: #0f1418; --panel: #1e272e; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; text-align: center; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; }
         
-        /* Contenedor de Pestañas */
-        .tab-content { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 80px; }
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; }
+        /* Pestañas Principales (Abajo para fácil acceso con el pulgar) */
+        .tab-bar { display: flex; background: #2c3e50; padding: 5px; position: fixed; bottom: 0; width: 100%; z-index: 1000; border-top: 2px solid #34495e; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: none; color: #95a5a6; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+        .tab-btn.active { color: #f1c40f; border-bottom: 3px solid #f1c40f; }
 
-        /* Navegación Inferior */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #1e272e; display: flex; border-top: 2px solid #333; height: 65px; z-index: 100; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; font-size: 0.7rem; font-weight: bold; border: none; background: none; cursor: pointer; }
-        .nav-item.active { color: var(--accent); }
-        .nav-icon { font-size: 1.4rem; margin-bottom: 2px; }
+        /* Contenedores de Vista */
+        .view { display: none; flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 70px; }
+        .view.active { display: flex; flex-direction: column; }
 
-        /* Header y Modos */
-        .game-header { display: flex; gap: 5px; margin-bottom: 10px; }
-        .mode-btn { flex: 1; background: #2c3e50; border: none; color: white; padding: 8px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; }
-        .mode-btn.active { background: var(--accent); color: black; }
+        /* Selectores de Juego (Arriba) */
+        .game-nav { display: flex; gap: 5px; margin-bottom: 10px; background: #161a1d; padding: 10px; }
+        .game-btn { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #2c3e50; color: white; font-size: 0.7rem; font-weight: bold; }
+        .game-btn.active { background: #f1c40f; color: black; border-color: #f1c40f; }
 
-        /* Marcadores */
-        .players-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-        .p-box { background: #1e272e; padding: 8px; border-radius: 10px; border: 2px solid #333; }
-        .active-0 { border-color: var(--p1); box-shadow: 0 0 10px var(--p1); }
-        .active-1 { border-color: var(--p2); box-shadow: 0 0 10px var(--p2); }
-        .active-2 { border-color: var(--p3); box-shadow: 0 0 10px var(--p3); }
-        .active-3 { border-color: var(--p4); box-shadow: 0 0 10px var(--p4); }
-        .score { font-size: 1.8rem; font-weight: bold; display: block; }
+        /* Marcadores Estilo Card */
+        .header-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .p-box { background: var(--panel); padding: 10px; border-radius: 12px; border: 2px solid #333; }
+        .active-0 { border-color: var(--p1); box-shadow: 0 0 8px var(--p1); }
+        .active-1 { border-color: var(--p2); box-shadow: 0 0 8px var(--p2); }
+        .active-2 { border-color: var(--p3); box-shadow: 0 0 8px var(--p3); }
+        .active-3 { border-color: var(--p4); box-shadow: 0 0 8px var(--p4); }
+        .score { font-size: 1.8rem; font-weight: bold; display: block; margin: 4px 0; }
+        .d-count { font-size: 0.7rem; color: #f1c40f; font-weight: bold; }
 
-        /* Cricket UI */
-        .mult-bar { display: flex; gap: 5px; margin: 10px 0; }
-        .m-sel { flex: 1; background: #333; border: 1px solid #555; color: white; padding: 12px; border-radius: 6px; font-weight: bold; }
-        .m-sel.active { background: #e67e22; border: none; }
-        .grid { width: 100%; border-spacing: 2px; }
-        .m-btn { width: 100%; height: 50px; font-size: 1.5rem; background: #1e272e; color: #444; border: 1px solid #333; border-radius: 5px; }
-        .m-btn.is-target { border: 1.5px solid white; color: #fff; }
+        /* Controles Cricket */
+        .mult-bar { display: flex; gap: 8px; margin: 10px 0; }
+        .m-sel { flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #444; background: #161a1d; color: white; font-weight: bold; }
+        .m-sel.active { background: #e67e22; border-color: #f39c12; }
+        
+        .c-table { width: 100%; border-spacing: 3px; }
+        .num-col { font-size: 1.3rem; font-weight: bold; color: #f1c40f; width: 40px; background: #2c3e50; border-radius: 6px; }
+        .m-btn { width: 100%; height: 50px; font-size: 1.5rem; background: var(--panel); color: #444; border: 1px solid #333; border-radius: 6px; }
+        .m-btn.is-target { border: 1.5px solid white; color: white; }
         .m-btn.closed { background: #27ae60 !important; color: white !important; }
-        .num-col { color: var(--accent); font-weight: bold; width: 35px; font-size: 1.2rem; }
 
-        /* X01 UI */
-        #inpX { width: 100%; box-sizing: border-box; padding: 20px; font-size: 2.5rem; background: #2c3e50; border: none; color: white; border-radius: 10px; text-align: center; margin-bottom: 15px; }
-
-        /* Botones Acción */
-        .btn-big { width: 100%; padding: 20px; border-radius: 10px; border: none; font-weight: bold; font-size: 1.2rem; cursor: pointer; }
-        .btn-sub { padding: 15px; border-radius: 8px; border: none; color: white; font-weight: bold; flex: 1; }
+        /* Inputs */
+        #inpX { padding: 15px; font-size: 2rem; width: 140px; border-radius: 12px; border: none; background: #2c3e50; color: white; text-align: center; margin-bottom: 15px; }
+        .btn-large { padding: 18px; border-radius: 12px; border: none; font-weight: bold; color: white; width: 100%; font-size: 1.1rem; margin-bottom: 10px; }
 
         /* Historial */
-        .hist-item { background: #1e272e; padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid var(--accent); text-align: left; }
+        .hist-item { background: var(--panel); padding: 15px; border-radius: 10px; margin-bottom: 10px; text-align: left; border-left: 5px solid #f1c40f; }
     </style>
 </head>
 <body>
 
-    <div class="tab-content">
-        <div id="tab-juego" class="tab-pane active">
-            <div class="game-header">
-                <button class="mode-btn" onclick="setModo(301)" id="m301">301</button>
-                <button class="mode-btn active" onclick="setModo(501)" id="m501">501</button>
-                <button class="mode-btn" onclick="setModo('C')" id="mC">CRICKET</button>
-            </div>
-
-            <div class="players-grid">
-                <div id="b0" class="p-box active-0"><span id="s0" class="score">0</span><div id="d0" style="font-size:0.6rem"></div></div>
-                <div id="b1" class="p-box"><span id="s1" class="score">0</span><div id="d1" style="font-size:0.6rem"></div></div>
-                <div id="b2" class="p-box"><span id="s2" class="score">0</span><div id="d2" style="font-size:0.6rem"></div></div>
-                <div id="b3" class="p-box"><span id="s3" class="score">0</span><div id="d3" style="font-size:0.6rem"></div></div>
-            </div>
-
-            <div id="ui-x01">
-                <input type="number" id="inpX" placeholder="Puntos" inputmode="numeric">
-                <button class="btn-big" style="background:#27ae60; color:white;" onclick="addX()">ANOTAR DARDO</button>
-            </div>
-
-            <div id="ui-cricket" style="display:none;">
-                <div class="mult-bar">
-                    <button class="m-sel active" id="mx1" onclick="setM(1)">X1</button>
-                    <button class="m-sel" id="mx2" onclick="setM(2)">X2</button>
-                    <button class="m-sel" id="mx3" onclick="setM(3)">X3</button>
-                </div>
-                <table class="grid"><tbody id="c-body"></tbody></table>
-                <div style="display:flex; gap:5px; margin-top:10px;">
-                    <button class="btn-sub" style="background:#c0392b" onclick="penal(25)">FUERA</button>
-                    <button class="btn-sub" style="background:#444" onclick="penalM()">OTRO Nº</button>
-                </div>
-            </div>
-
-            <button class="btn-big" style="background:var(--accent); color:black; margin-top:15px; font-size:1rem; padding:15px;" onclick="next()">SIGUIENTE JUGADOR ➜</button>
-            <button onclick="undo()" style="width:100%; background:none; color:#888; border:none; margin-top:10px; text-decoration:underline;">Deshacer último dardo</button>
+    <div id="view-game" class="view active">
+        <div class="game-nav">
+            <button class="game-btn" onclick="cambiarModo(301)" id="g301">301</button>
+            <button class="game-btn active" onclick="cambiarModo(501)" id="g501">501</button>
+            <button class="game-btn" onclick="cambiarModo('C')" id="gC">CRICKET</button>
         </div>
 
-        <div id="tab-hist" class="tab-pane">
-            <h2 style="color:var(--accent)">Historial de Partidas</h2>
-            <div id="hist-lista"></div>
-            <button class="btn-big" style="background:#c0392b; color:white; margin-top:20px;" onclick="clearHist()">BORRAR HISTORIAL</button>
+        <div class="header-grid">
+            <div id="b0" class="p-box active-0"><span>P1</span><span class="score" id="s0">0</span><span class="d-count" id="d0">0/3</span></div>
+            <div id="b1" class="p-box"><span>P2</span><span class="score" id="s1">0</span><span class="d-count" id="d1">0/3</span></div>
+            <div id="b2" class="p-box"><span>P3</span><span class="score" id="s2">0</span><span class="d-count" id="d2">0/3</span></div>
+            <div id="b3" class="p-box"><span>P4</span><span class="score" id="s3">0</span><span class="d-count" id="d3">0/3</span></div>
         </div>
 
-        <div id="tab-config" class="tab-pane">
-            <h2 style="color:var(--accent)">Ajustes</h2>
-            <p>Reinicia la partida actual o configura opciones.</p>
-            <button class="btn-big" style="background:#e74c3c; color:white;" onclick="resetGame()">REINICIAR PARTIDA ACTUAL</button>
+        <div id="sec-x01">
+            <input type="number" id="inpX" placeholder="0" inputmode="numeric">
+            <button class="btn-large" style="background:#27ae60;" onclick="anotarX()">ANOTAR DARDO</button>
         </div>
+
+        <div id="sec-cricket" style="display:none;">
+            <div class="mult-bar">
+                <button class="m-sel active" id="mx1" onclick="setMult(1)">x1</button>
+                <button class="m-sel" id="mx2" onclick="setMult(2)">x2</button>
+                <button class="m-sel" id="mx3" onclick="setMult(3)">x3</button>
+            </div>
+            <table class="c-table"><tbody id="c-body"></tbody></table>
+            <button class="btn-large" style="background:#c0392b; margin-top:10px;" onclick="penalizar(25)">DIANA FUERA (25)</button>
+        </div>
+
+        <button class="btn-large" style="background:#f1c40f; color:black; margin-top:auto;" onclick="pasarTurno()">SIGUIENTE JUGADOR ➜</button>
     </div>
 
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="switchTab('juego', this)">
-            <span class="nav-icon">🎯</span><span>JUEGO</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('hist', this)">
-            <span class="nav-icon">📜</span><span>HISTORIAL</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('config', this)">
-            <span class="nav-icon">⚙️</span><span>AJUSTES</span>
-        </button>
-    </nav>
+    <div id="view-hist" class="view">
+        <h2 style="color:#f1c40f">HISTORIAL DE PARTIDAS</h2>
+        <div id="hist-content"></div>
+        <button class="btn-large" style="background:#c0392b;" onclick="borrarHistorialTotal()">BORRAR TODO EL HISTORIAL</button>
+    </div>
+
+    <div id="view-tools" class="view">
+        <h2 style="color:#f1c40f">HERRAMIENTAS</h2>
+        <button class="btn-large" style="background:#555;" onclick="deshacer()">↩ DESHACER ÚLTIMO DARDO</button>
+        <button class="btn-large" style="background:#e67e22;" onclick="penalizarManual()">AÑADIR PENALIZACIÓN MANUAL</button>
+        <hr style="width:100%; border:1px solid #333; margin:20px 0;">
+        <button class="btn-large" style="background:#c0392b;" onclick="resetConfirmado()">🔄 REINICIAR PARTIDA ACTUAL</button>
+        <p style="color:#888; font-size:0.8rem;">El cambio de juego no borra tus puntos a menos que uses este botón.</p>
+    </div>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" id="t-game" onclick="switchTab('game')">🎯 JUEGO</button>
+        <button class="tab-btn" id="t-hist" onclick="switchTab('hist')">📜 HISTORIAL</button>
+        <button class="tab-btn" id="t-tools" onclick="switchTab('tools')">🛠 AJUSTES</button>
+    </div>
 
     <script>
-        let modo = 501, turno = 0, scores = [501,501,501,501], dardos = 0, mult = 1;
-        let marks = {20:[0,0,0,0],19:[0,0,0,0],18:[0,0,0,0],17:[0,0,0,0],16:[0,0,0,0],15:[0,0,0,0],25:[0,0,0,0]};
-        let orden = [20,19,18,17,16,15,25], log = [];
+        // Variables globales
+        let modo = 501, turno = 0, dardos = 0, mult = 1;
+        let partidasData = {
+            301: { s: [301,301,301,301], m: null },
+            501: { s: [501,501,501,501], m: null },
+            'C': { s: [0,0,0,0], m: {20:[0,0,0,0],19:[0,0,0,0],18:[0,0,0,0],17:[0,0,0,0],16:[0,0,0,0],15:[0,0,0,0],25:[0,0,0,0]} }
+        };
+        let orden = [20,19,18,17,16,15,25], historialAcciones = [];
 
-        function switchTab(id, btn) {
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-            document.getElementById('tab-'+id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            btn.classList.add('active');
-            if(id === 'hist') renderHist();
+        function switchTab(tab) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('view-' + tab).classList.add('active');
+            document.getElementById('t-' + tab).classList.add('active');
+            if(tab === 'hist') renderHistorial();
         }
 
-        function setModo(m) { 
-            modo = m; 
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('m'+(m==='C'?'C':m)).classList.add('active');
-            resetGame(true); 
+        function cambiarModo(m) {
+            modo = m;
+            document.querySelectorAll('.game-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('g'+(m==='C'?'C':m)).classList.add('active');
+            render();
         }
 
-        function setM(v) { 
-            mult = v; 
+        function setMult(v) {
+            mult = v;
             document.querySelectorAll('.m-sel').forEach(b => b.classList.remove('active'));
             document.getElementById('mx'+v).classList.add('active');
         }
 
-        function getT() { for(let n of orden) { if(marks[n].some(m => m < 3)) return n; } return 25; }
+        function guardarSnapshot() {
+            historialAcciones.push(JSON.stringify({
+                data: JSON.parse(JSON.stringify(partidasData)),
+                t: turno,
+                d: dardos,
+                m: modo
+            }));
+        }
 
-        function save() { log.push(JSON.stringify({s:[...scores], t:turno, m:JSON.parse(JSON.stringify(marks)), d:dardos})); }
-        
-        function undo() { if(log.length>0) { let l=JSON.parse(log.pop()); scores=l.s; turno=l.t; marks=l.m; dardos=l.d; render(); } }
+        function deshacer() {
+            if (historialAcciones.length > 0) {
+                let last = JSON.parse(historialAcciones.pop());
+                partidasData = last.data; turno = last.t; dardos = last.d; modo = last.m;
+                render();
+                switchTab('game');
+            }
+        }
 
-        function addX() {
+        function anotarX() {
             let v = parseInt(document.getElementById('inpX').value);
             if(isNaN(v)) return;
-            save();
-            if(scores[turno]-v < 0 || scores[turno]-v === 1) { alert("BUST!"); dardos=3; }
-            else if(scores[turno]-v === 0) { win(turno); return; }
-            else { scores[turno]-=v; dardos++; }
+            guardarSnapshot();
+            let currentScores = partidasData[modo].s;
+            if(currentScores[turno]-v < 0 || currentScores[turno]-v === 1) { alert("BUST!"); dardos=3; }
+            else if(currentScores[turno]-v === 0) { victoria(turno); return; }
+            else { currentScores[turno]-=v; dardos++; }
             document.getElementById('inpX').value = '';
-            if(dardos>=3) next(); else render();
+            if(dardos>=3) pasarTurno(); else render();
         }
 
         function markC(n, p) {
-            if(p !== turno || n !== getT()) return;
-            save();
+            if(p !== turno) return;
+            guardarSnapshot();
+            let cData = partidasData['C'];
             for(let i=0; i<mult; i++) {
-                if(marks[n][p] < 3) marks[n][p]++;
-                else { for(let j=0; j<4; j++) { if(j!==p && marks[n][j]<3) scores[j]+=(n===25?25:n); } }
+                if(cData.m[n][p] < 3) cData.m[n][p]++;
+                else { for(let j=0; j<4; j++) { if(j!==p && cData.m[n][j]<3) cData.s[j]+=(n===25?25:n); } }
             }
-            dardos++; setM(1);
-            if(dardos>=3) next(); else { checkC(); render(); }
+            dardos++; setMult(1);
+            if(dardos>=3) pasarTurno(); else { checkWinC(); render(); }
         }
 
-        function penal(v) { save(); scores[turno]+=v; dardos++; if(dardos>=3) next(); else render(); }
-        function penalM() { let p = parseInt(prompt("Puntos:")); if(!isNaN(p)) penal(p); }
-        function next() { dardos=0; turno=(turno+1)%4; setM(1); render(); }
+        function penalizar(v) { guardarSnapshot(); partidasData[modo].s[turno]+=v; dardos++; if(dardos>=3) pasarTurno(); else render(); }
+        function penalizarManual() { let p = parseInt(prompt("Puntos:")); if(!isNaN(p)) { penalizar(p); switchTab('game'); } }
+        function pasarTurno() { dardos=0; turno=(turno+1)%4; setMult(1); render(); }
 
-        function win(p) {
-            alert("¡GANADOR J"+(p+1)+"!");
-            let h = JSON.parse(localStorage.getItem('darts_v2') || '[]');
-            h.unshift({f:new Date().toLocaleString(), m:modo==='C'?'Cricket':modo, w:p+1, s:[...scores]});
-            localStorage.setItem('darts_v2', JSON.stringify(h.slice(0,10)));
-            resetGame(true);
+        function victoria(p) {
+            alert("¡GANADOR JUGADOR " + (p+1) + "!");
+            let h = JSON.parse(localStorage.getItem('d_h') || '[]');
+            h.unshift({ f: new Date().toLocaleString(), m: modo, g: p+1, p: [...partidasData[modo].s] });
+            localStorage.setItem('d_h', JSON.stringify(h.slice(0,15)));
+            resetConfirmado(true);
         }
 
-        function render
+        function renderHistorial() {
+            let h = JSON.parse(localStorage.getItem('d_h') || '[]');
+            let cont = document.getElementById('hist-content');
+            cont.innerHTML = h.length ? "" : "<p>No hay partidas.</p>";
+            h.forEach(x => {
+                cont.innerHTML += `<div class="hist-item">
+                    <b>${x.f}</b> | Modo: ${x.m}<br>
+                    <span style="color:#f1c40f">Ganador: J${x.g}</span><br>
+                    <small>S: ${x.p.join(' | ')}</small>
+                </div>`;
+            });
+        }
+
+        function borrarHistorialTotal() { if(confirm("¿Borrar todo?")) { localStorage.removeItem('d_h'); renderHistorial(); } }
+
+        function resetConfirmado(auto = false) {
+            if(!auto && !confirm("¿Reiniciar la partida? Esto borrará tus puntos actuales.")) return;
+            if(modo === 'C') {
+                partidasData['C'] = { s: [0,0,0,0], m: {20:[0,0,0,0],19:[0,0,0,0],18:[0,0,0,0],17:[0,0,0,0],16:[0,0,0,0],15:[0,0,0,0],25:[0,0,0,0]} };
+            } else {
+                partidasData[modo].s = [modo, modo, modo, modo];
+            }
+            turno = 0; dardos = 0; render();
+            if(!auto) switchTab('game');
+        }
+
+        function render() {
+            let cur = partidasData[modo];
+            document.getElementById('sec-x01').style.display = (modo==='C'?'none':'block');
+            document.getElementById('sec-cricket').style.display = (modo==='C'?'block':'none');
+            
+            for(let i=0; i<4; i++) {
+                document.getElementById('s'+i).innerText = cur.s[i];
+                document.getElementById('b'+i).className = 'p-box' + (turno===i?' active-'+i:'');
+                document.getElementById('d'+i).innerText = (turno===i ? "DARDOS: " + dardos + "/3" : "");
+            }
+
+            if(modo==='C') {
+                let h = "", t = 20;
+                for(let n of orden) { if(cur.m[n].some(m=>m<3)) { t=n; break; } }
+                orden.forEach(n => {
+                    h += `<tr>`;
+                    for(let p=0; p<4; p++) {
+                        if(p===2) h += `<td class="num-col">${n==25?'B':n}</td>`;
+                        let cls = cur.m[n][p]>=3?'closed':(n===t && p===turno?'is-target':'');
+                        h += `<td><button class="m-btn ${cls}" onclick="markC(${n},${p})">${getSim(cur.m[n][p])}</button></td>`;
+                    }
+                    h += `</tr>`;
+                });
+                document.getElementById('c-body').innerHTML = h;
+            }
+        }
+
+        function getSim(c) { return c===0?"":(c===1?"/":(c===2?"X":"⊚")); }
+        function checkWinC() {
+            let c = partidasData['C'];
+            for(let p=0; p<4; p++) {
+                if(orden.every(n => c.m[n][p]>=3) && c.s[p] === Math.min(...c.s)) victoria(p);
+            }
+        }
+        render();
+    </script>
+</body>
+</html>
