@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Darts Pro Ultimate</title>
+    <title>Darts Pro v3</title>
     <style>
         :root { --p1: #3498db; --p2: #e74c3c; --p3: #2ecc71; --p4: #f1c40f; --bg: #0f1418; --panel: #1e272e; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; text-align: center; margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
-        /* Nav Superior */
         .game-nav { display: flex; gap: 2px; background: #161a1d; padding: 5px; border-bottom: 1px solid #333; }
         .game-btn { flex: 1; padding: 8px 1px; border-radius: 4px; border: 1px solid #444; background: #2c3e50; color: white; font-weight: bold; font-size: 0.6rem; }
         .game-btn.active { background: #f1c40f; color: black; border-color: #f1c40f; }
@@ -16,7 +15,6 @@
         .view { display: none; flex: 1; overflow-y: auto; padding: 8px; padding-bottom: 80px; }
         .view.active { display: block; }
 
-        /* Marcadores */
         .header-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
         .p-box { background: var(--panel); padding: 8px; border-radius: 10px; border: 2px solid #333; }
         .active-0 { border-color: var(--p1); box-shadow: 0 0 8px var(--p1); }
@@ -25,16 +23,18 @@
         .active-3 { border-color: var(--p4); box-shadow: 0 0 8px var(--p4); }
         .score { font-size: 1.5rem; font-weight: bold; display: block; }
 
-        /* Cricket */
-        .c-table { width: 100%; border-spacing: 2px; }
-        .num-col { font-size: 1.1rem; font-weight: bold; color: #f1c40f; width: 32px; background: #2c3e50; border-radius: 4px; }
-        .m-btn { width: 100%; height: 40px; font-size: 1.3rem; background: var(--panel); color: #444; border: 1px solid #333; border-radius: 4px; }
+        /* Cricket Table Mejorada */
+        .c-table { width: 100%; border-spacing: 2px; table-layout: fixed; }
+        .num-col { font-size: 1.1rem; font-weight: bold; color: #f1c40f; width: 40px; background: #2c3e50; border-radius: 4px; }
+        .m-btn { width: 100%; height: 45px; font-size: 1.4rem; background: var(--panel); color: #444; border: 1px solid #333; border-radius: 4px; font-weight: bold; }
         .m-btn.closed { background: #27ae60 !important; color: white !important; }
+        .m-btn.dead { background: #111 !important; border-color: #222 !important; color: #222 !important; opacity: 0.5; }
         .m-btn.is-target { border: 2px solid white; color: white; }
         .m-btn.locked { opacity: 0.1; pointer-events: none; }
 
-        /* General UI */
-        .btn-main { padding: 14px; border-radius: 10px; border: none; font-weight: bold; color: white; width: 100%; font-size: 0.9rem; margin-bottom: 6px; cursor: pointer; }
+        .p-total-row { font-size: 0.8rem; font-weight: bold; color: #aaa; background: #161a1d; }
+
+        .btn-main { padding: 14px; border-radius: 10px; border: none; font-weight: bold; color: white; width: 100%; font-size: 0.9rem; margin-bottom: 6px; }
         .quick-tools { display: flex; gap: 4px; margin-top: 4px; }
         .btn-tool { flex: 1; padding: 10px; border-radius: 8px; border: none; font-size: 0.65rem; font-weight: bold; color: white; }
         
@@ -66,7 +66,16 @@
                 <button class="btn-tool" id="mx2" onclick="setMult(2)" style="background:#161a1d; border:1px solid #444;">x2</button>
                 <button class="btn-tool" id="mx3" onclick="setMult(3)" style="background:#161a1d; border:1px solid #444;">x3</button>
             </div>
-            <table class="c-table"><tbody id="c-body"></tbody></table>
+            <table class="c-table">
+                <thead>
+                    <tr class="p-total-row">
+                        <th id="th0">0</th><th id="th1">0</th>
+                        <th style="background:transparent; width:40px;"></th>
+                        <th id="th2">0</th><th id="th3">0</th>
+                    </tr>
+                </thead>
+                <tbody id="c-body"></tbody>
+            </table>
         </div>
 
         <button class="btn-main" style="background:#f1c40f; color:black; margin-top:10px;" onclick="pasarTurno()">SIGUIENTE JUGADOR ➜</button>
@@ -95,7 +104,8 @@
             'C': { s:[0,0,0,0], m:{20:[0,0,0,0],19:[0,0,0,0],18:[0,0,0,0],17:[0,0,0,0],16:[0,0,0,0],15:[0,0,0,0],25:[0,0,0,0]} },
             'CL': { s:[0,0,0,0], m:{20:[0,0,0,0],19:[0,0,0,0],18:[0,0,0,0],17:[0,0,0,0],16:[0,0,0,0],15:[0,0,0,0],25:[0,0,0,0]} }
         };
-        let orden = [20,19,18,17,16,15,25], log = [];
+        const orden = [20,19,18,17,16,15,25];
+        let log = [];
 
         function cambiarModo(m) {
             modo = m;
@@ -129,17 +139,25 @@
         function markC(n, p) {
             if(p !== turno) return;
             if(modo === 'C' && n !== getTargetMaster()) return;
-            save();
+            
             let c = partidas[modo];
+            // REGLA NÚMERO MUERTO: Si todos han cerrado el número, no se puede hacer nada.
+            let todosCerrados = c.m[n].every(m => m >= 3);
+            if(todosCerrados) return;
+
+            save();
             for(let i=0; i<mult; i++) {
                 if(c.m[n][p] < 3) {
                     c.m[n][p]++;
                 } else {
-                    if(modo === 'C') { // MASTER (Cut-Throat: sumas a los demás)
-                        for(let j=0; j<4; j++) if(j!==p && c.m[n][j]<3) c.s[j]+=(n===25?25:n);
-                    } else { // LIBRE (Suma Positiva: te sumas a ti)
-                        let alguienNoCerrado = c.m[n].some(marcas => marcas < 3);
-                        if(alguienNoCerrado) c.s[p]+=(n===25?25:n);
+                    // Solo puntúa si alguien todavía no lo ha cerrado
+                    let alguienNoCerrado = c.m[n].some(m => m < 3);
+                    if(alguienNoCerrado) {
+                        if(modo === 'C') { // MASTER (Sumar a los demás)
+                            for(let j=0; j<4; j++) if(j!==p && c.m[n][j]<3) c.s[j]+=(n===25?25:n);
+                        } else { // LIBRE (Sumarse a uno mismo)
+                            c.s[p]+=(n===25?25:n);
+                        }
                     }
                 }
             }
@@ -147,18 +165,17 @@
             if(dardos>=3) pasarTurno(); else { checkWinC(); render(); }
         }
 
-        function pasarTurno() { dardos=0; turno=(turno+1)%4; render(); }
-
         function render() {
             const h = document.getElementById('main-header');
+            const c = partidas[modo];
             h.innerHTML = '';
             for(let i=0; i<4; i++) {
-                let s = partidas[modo].s[i];
                 h.innerHTML += `<div class="p-box ${turno===i?'active-'+i:''}">
                     <span style="font-size:0.7rem">P${i+1}</span>
-                    <span class="score">${s}</span>
-                    <span style="font-size:0.6rem; color:#f1c40f">${turno===i?'D:'+dardos+'/3':''}</span>
+                    <span class="score">${c.s[i]}</span>
+                    <span style="font-size:0.6rem; color:#f1c40f">${turno===i?'DARDO '+dardos+'/3':''}</span>
                 </div>`;
+                if(modo.toString().includes('C')) document.getElementById('th'+i).innerText = c.s[i];
             }
 
             document.getElementById('sec-x01').style.display = (modo.toString().includes('01') ? 'block' : 'none');
@@ -168,19 +185,28 @@
 
         function renderCricket() {
             let html = "", target = getTargetMaster();
+            const c = partidas[modo];
             orden.forEach(n => {
+                let todosCerrados = c.m[n].every(m => m >= 3);
                 html += `<tr>`;
                 for(let p=0; p<4; p++) {
                     if(p===2) html += `<td class="num-col">${n==25?'B':n}</td>`;
-                    let m = partidas[modo].m[n][p];
-                    let cls = m>=3?'closed':(modo==='C' && n!==target?'locked':(p===turno?'is-target':''));
-                    html += `<td><button class="m-btn ${cls}" onclick="markC(${n},${p})">${m==0?'':(m==1?'/':(m==2?'X':'⊚'))}</button></td>`;
+                    let m = c.m[n][p];
+                    let cls = "";
+                    if(todosCerrados) cls = "dead";
+                    else if(m >= 3) cls = "closed";
+                    else if(modo === 'C' && n !== target) cls = "locked";
+                    else if(p === turno) cls = "is-target";
+
+                    html += `<td><button class="m-btn ${cls}" onclick="markC(${n},${p})">${getSim(m)}</button></td>`;
                 }
                 html += `</tr>`;
             });
             document.getElementById('c-body').innerHTML = html;
         }
 
+        function getSim(m) { return m==0?'':(m==1?'/':(m==2?'X':'⊚')); }
+        
         function getTargetMaster() { 
             if(modo==='CL') return null; 
             for(let n of orden) if(!partidas.C.m[n].every(m=>m>=3)) return n; 
@@ -194,30 +220,16 @@
             });
         }
 
-        function switchTab(t) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('view-'+t).classList.add('active');
-            document.getElementById('t-'+t).classList.add('active');
-            if(t==='hist') {
-                let h = JSON.parse(localStorage.getItem('d_log') || '[]');
-                document.getElementById('hist-list').innerHTML = h.map(x=>`<div style="padding:10px; border-bottom:1px solid #333;">${x.f} - ${x.m} - <b>Ganador: P${x.g}</b></div>`).join('');
-            }
-        }
-
         function victoria(p) {
             alert("¡P"+(p+1)+" GANA!");
-            let h = JSON.parse(localStorage.getItem('d_log') || '[]');
-            h.unshift({f:new Date().toLocaleTimeString(), m:modo, g:p+1});
-            localStorage.setItem('d_log', JSON.stringify(h.slice(0,10)));
+            saveHist(p);
             resetDirecto();
         }
 
         function checkWinC() {
             let c = partidas[modo];
             for(let p=0; p<4; p++) {
-                let cerradoTodo = orden.every(n => c.m[n][p]>=3);
-                if(cerradoTodo) {
+                if(orden.every(n => c.m[n][p]>=3)) {
                     if(modo === 'C' && c.s[p] === Math.min(...c.s)) victoria(p);
                     if(modo === 'CL' && c.s[p] === Math.max(...c.s)) victoria(p);
                 }
@@ -230,6 +242,25 @@
             else partidas[modo].s=[parseInt(modo),parseInt(modo),parseInt(modo),parseInt(modo)];
             turno=0; dardos=0; render();
         }
+
+        function saveHist(p) {
+            let h = JSON.parse(localStorage.getItem('d_log') || '[]');
+            h.unshift({f:new Date().toLocaleTimeString(), m:modo, g:p+1});
+            localStorage.setItem('d_log', JSON.stringify(h.slice(0,10)));
+        }
+
+        function switchTab(t) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('view-'+t).classList.add('active');
+            document.getElementById('t-'+t).classList.add('active');
+            if(t==='hist') {
+                let h = JSON.parse(localStorage.getItem('d_log') || '[]');
+                document.getElementById('hist-list').innerHTML = h.map(x=>`<div style="padding:10px; border-bottom:1px solid #333;">${x.f} - ${x.m} - <b>P${x.g} GANA</b></div>`).join('') || 'Sin partidas';
+            }
+        }
+
+        function pasarTurno() { dardos=0; turno=(turno+1)%4; render(); }
         render();
     </script>
 </body>
